@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "cjm-transcript-workflow-management"
+  site-url: "https://cj-mills.github.io/cjm-transcript-workflow-management"
+  description: "A FastHTML management interface for context graph documents to list, inspect, delete, and import/export graph spines produced by transcript decomposition workflows."
+  repo-branch: main
+  repo-url: "https://github.com/cj-mills/cjm-transcript-workflow-management"
