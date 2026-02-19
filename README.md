@@ -8,3 +8,229 @@
 ``` bash
 pip install cjm_transcript_workflow_management
 ```
+
+## Project Structure
+
+    nbs/
+    ├── html_ids.ipynb # HTML ID constants for the graph management interface
+    ├── models.ipynb   # Data models for the graph management interface
+    └── utils.ipynb    # Formatting utilities for the management interface
+
+Total: 3 notebooks across 3 directories
+
+## Module Dependencies
+
+``` mermaid
+graph LR
+    html_ids[html_ids<br/>html_ids]
+    models[models<br/>Models]
+    utils[utils<br/>utils]
+```
+
+No cross-module dependencies detected.
+
+## CLI Reference
+
+No CLI commands found in this project.
+
+## Module Overview
+
+Detailed documentation for each module in the project:
+
+### html_ids (`html_ids.ipynb`)
+
+> HTML ID constants for the graph management interface
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.html_ids import (
+    ManagementHtmlIds
+)
+```
+
+#### Classes
+
+``` python
+class ManagementHtmlIds:
+    "HTML ID constants for the graph management interface."
+    
+    def as_selector(
+            id_str: str  # The HTML ID to convert
+        ) -> str:  # CSS selector with # prefix
+        "Convert an ID to a CSS selector format."
+```
+
+### Models (`models.ipynb`)
+
+> Data models for the graph management interface
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.models import (
+    SegmentSample,
+    DocumentSummary,
+    DocumentDetail,
+    ExportBundle,
+    ImportResult,
+    ManagementUrls
+)
+```
+
+#### Classes
+
+``` python
+@dataclass
+class SegmentSample:
+    "Lightweight segment snapshot for detail view display."
+    
+    index: int  # Segment position in the document
+    text: str  # Segment text content
+    start_time: float  # Start time in seconds
+    end_time: float  # End time in seconds
+```
+
+``` python
+@dataclass
+class DocumentSummary:
+    "Summary of a single document for list display."
+    
+    document_id: str  # Document node UUID
+    title: str  # Document title from properties
+    media_type: str  # e.g. "audio"
+    segment_count: int  # Number of Segment nodes
+    total_duration: float  # Sum of segment durations in seconds
+    created_at: float  # Unix timestamp when created
+```
+
+``` python
+@dataclass
+class DocumentDetail:
+    "Full document information for the detail dashboard."
+    
+    document_id: str  # Document node UUID
+    title: str  # Document title
+    media_type: str  # e.g. "audio"
+    created_at: float  # Unix timestamp
+    updated_at: float  # Unix timestamp
+    segment_count: int  # Total number of segments
+    total_duration: float  # Sum of segment durations in seconds
+    avg_segment_duration: float  # Average segment duration in seconds
+    has_starts_with: bool  # Document has a STARTS_WITH edge
+    next_chain_complete: bool  # All NEXT edges form a complete chain
+    next_count: int  # Number of NEXT edges found
+    part_of_complete: bool  # All segments have PART_OF edges
+    part_of_count: int  # Number of PART_OF edges found
+    all_have_timing: bool  # All segments have start_time/end_time
+    segments_missing_timing: int  # Count of segments without timing
+    all_have_sources: bool  # All segments have source references
+    segments_missing_sources: int  # Count of segments without sources
+    all_checks_passed: bool  # True if all integrity checks pass
+    source_plugins: List[str] = field(...)  # Unique plugin names from sources
+    first_segments: List[SegmentSample] = field(...)  # First N segments
+    last_segments: List[SegmentSample] = field(...)  # Last N segments
+```
+
+``` python
+@dataclass
+class ExportBundle:
+    "Metadata wrapper for exported graph data."
+    
+    format: str  # Always "cjm-context-graph"
+    version: str  # Semantic version, e.g. "1.0.0"
+    exported_at: str  # ISO 8601 datetime string
+    source_plugin: str  # Plugin that produced the data
+    document_count: int  # Number of Document nodes in the export
+    graph: Dict[str, Any]  # {"nodes": [...], "edges": [...]}
+```
+
+``` python
+@dataclass
+class ImportResult:
+    "Result of a graph import operation."
+    
+    success: bool  # Whether the import succeeded
+    nodes_created: int  # Number of nodes created
+    edges_created: int  # Number of edges created
+    nodes_skipped: int  # Number of nodes skipped (already exist)
+    edges_skipped: int  # Number of edges skipped (already exist)
+    errors: List[str] = field(...)  # Error messages if any
+```
+
+``` python
+@dataclass
+class ManagementUrls:
+    "URL bundle for management route endpoints."
+    
+    list_documents: str  # GET: document list page
+    document_detail: str  # GET: + /{doc_id}
+    delete_document: str  # DELETE: + /{doc_id}
+    delete_selected: str  # POST: bulk delete
+    export_document: str  # GET: + /{doc_id}
+    export_all: str  # GET: full database export
+    import_graph: str  # POST: file upload import
+```
+
+### utils (`utils.ipynb`)
+
+> Formatting utilities for the management interface
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.utils import (
+    format_duration,
+    format_duration_short,
+    format_date,
+    format_datetime,
+    truncate_text,
+    format_time_range
+)
+```
+
+#### Functions
+
+``` python
+def format_duration(
+    seconds: Optional[float]  # Duration in seconds
+) -> str:  # Formatted string (MM:SS or H:MM:SS)
+    "Format duration for display in document list and detail views."
+```
+
+``` python
+def format_duration_short(
+    seconds: Optional[float]  # Duration in seconds
+) -> str:  # Formatted string (e.g., "10.3s")
+    "Format duration as compact seconds for average display."
+```
+
+``` python
+def format_date(
+    timestamp: Optional[float]  # Unix timestamp
+) -> str:  # Formatted date string (e.g., "Feb 19, 2026")
+    "Format unix timestamp as a human-readable date."
+```
+
+``` python
+def format_datetime(
+    timestamp: Optional[float]  # Unix timestamp
+) -> str:  # Formatted datetime string (e.g., "Feb 19, 2026 12:00")
+    "Format unix timestamp as a human-readable date and time."
+```
+
+``` python
+def truncate_text(
+    text: Optional[str],  # Full text to truncate
+    max_length: int = 60  # Maximum length before truncation
+) -> str:  # Truncated text with ellipsis if needed
+    "Truncate text for table and sample display."
+```
+
+``` python
+def format_time_range(
+    start: Optional[float],  # Start time in seconds
+    end: Optional[float]     # End time in seconds
+) -> str:  # Formatted range (e.g., "0.0s - 2.1s")
+    "Format a time range for sample segment display."
+```
