@@ -12,11 +12,13 @@ pip install cjm_transcript_workflow_management
 ## Project Structure
 
     nbs/
-    ├── html_ids.ipynb # HTML ID constants for the graph management interface
-    ├── models.ipynb   # Data models for the graph management interface
-    └── utils.ipynb    # Formatting utilities for the management interface
+    ├── services/ (1)
+    │   └── management.ipynb  # Service layer wrapping graph plugin operations for document management
+    ├── html_ids.ipynb  # HTML ID constants for the graph management interface
+    ├── models.ipynb    # Data models for the graph management interface
+    └── utils.ipynb     # Formatting utilities for the management interface
 
-Total: 3 notebooks across 3 directories
+Total: 4 notebooks across 3 directories
 
 ## Module Dependencies
 
@@ -24,10 +26,14 @@ Total: 3 notebooks across 3 directories
 graph LR
     html_ids[html_ids<br/>html_ids]
     models[models<br/>Models]
+    services_management[services.management<br/>services.management]
     utils[utils<br/>utils]
+
+    services_management --> models
+    services_management --> utils
 ```
 
-No cross-module dependencies detected.
+*2 cross-module dependencies detected*
 
 ## CLI Reference
 
@@ -59,6 +65,179 @@ class ManagementHtmlIds:
             id_str: str  # The HTML ID to convert
         ) -> str:  # CSS selector with # prefix
         "Convert an ID to a CSS selector format."
+```
+
+### services.management (`management.ipynb`)
+
+> Service layer wrapping graph plugin operations for document management
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.services.management import (
+    DEBUG_MANAGEMENT_SERVICE,
+    ManagementService
+)
+```
+
+#### Functions
+
+``` python
+@patch
+async def list_documents_async(self:ManagementService) -> List[DocumentSummary]:  # All documents sorted newest first
+    """List all documents with summary info."""
+    if DEBUG_MANAGEMENT_SERVICE
+    "List all documents with summary info."
+```
+
+``` python
+@patch
+def list_documents(self:ManagementService) -> List[DocumentSummary]:  # All documents sorted newest first
+    "List all documents with summary info synchronously."
+```
+
+``` python
+@patch
+async def get_document_detail_async(
+    self:ManagementService,
+    document_id: str,  # UUID of the Document node
+) -> Optional[DocumentDetail]:  # Full detail or None if not found
+    "Get full document detail with integrity checks and samples."
+```
+
+``` python
+@patch
+def get_document_detail(
+    self:ManagementService,
+    document_id: str,  # UUID of the Document node
+) -> Optional[DocumentDetail]:  # Full detail or None if not found
+    "Get full document detail with integrity checks and samples synchronously."
+```
+
+``` python
+@patch
+async def delete_document_async(
+    self:ManagementService,
+    document_id: str,  # UUID of the Document node to delete
+) -> bool:  # True if deletion succeeded
+    "Delete a single document and all its segments via cascade."
+```
+
+``` python
+@patch
+def delete_document(
+    self:ManagementService,
+    document_id: str,  # UUID of the Document node to delete
+) -> bool:  # True if deletion succeeded
+    "Delete a single document and all its segments synchronously."
+```
+
+``` python
+@patch
+async def delete_documents_async(
+    self:ManagementService,
+    document_ids: List[str],  # UUIDs of Document nodes to delete
+) -> int:  # Number of documents successfully deleted
+    "Delete multiple documents and all their segments via cascade."
+```
+
+``` python
+@patch
+def delete_documents(
+    self:ManagementService,
+    document_ids: List[str],  # UUIDs of Document nodes to delete
+) -> int:  # Number of documents successfully deleted
+    "Delete multiple documents and all their segments synchronously."
+```
+
+``` python
+@patch
+async def export_document_async(
+    self:ManagementService,
+    document_id: str,  # UUID of the Document node to export
+) -> Optional[ExportBundle]:  # Export bundle or None if not found
+    "Export a single document's subgraph as an ExportBundle."
+```
+
+``` python
+@patch
+def export_document(
+    self:ManagementService,
+    document_id: str,  # UUID of the Document node to export
+) -> Optional[ExportBundle]:  # Export bundle or None if not found
+    "Export a single document's subgraph synchronously."
+```
+
+``` python
+@patch
+async def export_all_async(self:ManagementService) -> Optional[ExportBundle]:  # Export bundle or None if error
+    """Export the entire graph database as an ExportBundle."""
+    if DEBUG_MANAGEMENT_SERVICE
+    "Export the entire graph database as an ExportBundle."
+```
+
+``` python
+@patch
+def export_all(self:ManagementService) -> Optional[ExportBundle]:  # Export bundle or None if error
+    "Export the entire graph database synchronously."
+```
+
+``` python
+@patch
+async def import_graph_async(
+    self:ManagementService,
+    bundle_data: Dict[str, Any],  # Parsed JSON from export file
+    merge_strategy: str = "skip",  # skip, overwrite, or merge
+) -> ImportResult:  # Result with counts and any errors
+    "Validate and import graph data from an export bundle."
+```
+
+``` python
+@patch
+def import_graph(
+    self:ManagementService,
+    bundle_data: Dict[str, Any],  # Parsed JSON from export file
+    merge_strategy: str = "skip",  # skip, overwrite, or merge
+) -> ImportResult:  # Result with counts and any errors
+    "Validate and import graph data synchronously."
+```
+
+#### Classes
+
+``` python
+class ManagementService:
+    def __init__(
+        self,
+        plugin_manager: PluginManager,  # Plugin manager for accessing graph plugin
+        plugin_name: str = "cjm-graph-plugin-sqlite",  # Name of the graph plugin
+    )
+    "Service wrapping graph plugin operations for document management."
+    
+    def __init__(
+            self,
+            plugin_manager: PluginManager,  # Plugin manager for accessing graph plugin
+            plugin_name: str = "cjm-graph-plugin-sqlite",  # Name of the graph plugin
+        )
+        "Initialize with plugin manager."
+    
+    def is_available(self) -> bool:  # True if plugin is loaded and ready
+            """Check if the graph plugin is available."""
+            return self._manager.get_plugin(self._plugin_name) is not None
+        
+        # --- Plugin action wrappers ---
+        
+        async def _get_context_async(
+            self,
+            node_id: str,  # UUID of the node to query
+            depth: int = 1,  # Traversal depth
+        ) -> Optional[GraphContext]:  # GraphContext or None if error
+        "Check if the graph plugin is available."
+```
+
+#### Variables
+
+``` python
+DEBUG_MANAGEMENT_SERVICE = False  # Enable for verbose graph query logging
 ```
 
 ### Models (`models.ipynb`)
