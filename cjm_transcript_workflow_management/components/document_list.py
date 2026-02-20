@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['render_toolbar', 'render_document_row', 'render_document_table', 'render_list_scripts', 'render_document_list']
 
-# %% ../../nbs/components/document_list.ipynb #1c9e6382
+# %% ../../nbs/components/document_list.ipynb #2350c61c
 from typing import Any, List
 
 from fasthtml.common import (
@@ -51,7 +51,7 @@ from cjm_transcript_workflow_management.components.helpers import (
     render_delete_modal, render_alert, DEBUG_MANAGEMENT_RENDER
 )
 
-# %% ../../nbs/components/document_list.ipynb #4210ffa3
+# %% ../../nbs/components/document_list.ipynb #16eefe65
 def render_toolbar(
     urls:ManagementUrls,  # URL bundle for route endpoints
     doc_count:int=0,  # Number of documents in the list
@@ -85,7 +85,7 @@ def render_toolbar(
         cls=combine_classes(flex_display, justify.between, items.center, m.b(2)),
     )
 
-# %% ../../nbs/components/document_list.ipynb #2c51d13d
+# %% ../../nbs/components/document_list.ipynb #1f742751
 def render_document_row(
     doc:DocumentSummary,  # Document summary data
     urls:ManagementUrls,  # URL bundle for route endpoints
@@ -144,7 +144,7 @@ def render_document_row(
         ),
     )
 
-# %% ../../nbs/components/document_list.ipynb #6b1649c0
+# %% ../../nbs/components/document_list.ipynb #12fc0532
 def render_document_table(
     documents:List[DocumentSummary],  # List of document summaries
     urls:ManagementUrls,  # URL bundle for route endpoints
@@ -176,7 +176,7 @@ def render_document_table(
         )
     )
 
-# %% ../../nbs/components/document_list.ipynb #1ea8f014
+# %% ../../nbs/components/document_list.ipynb #f361a3a2
 def render_list_scripts(
     urls:ManagementUrls,  # URL bundle for route endpoints
 ) -> Any:  # Script element
@@ -222,7 +222,7 @@ def render_list_scripts(
     }}
     """)
 
-# %% ../../nbs/components/document_list.ipynb #e7d65bac
+# %% ../../nbs/components/document_list.ipynb #fdf58e55
 def render_document_list(
     documents:List[DocumentSummary],  # List of document summaries
     urls:ManagementUrls,  # URL bundle for route endpoints

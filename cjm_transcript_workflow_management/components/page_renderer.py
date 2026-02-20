@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['render_page_header', 'render_management_page']
 
-# %% ../../nbs/components/page_renderer.ipynb #e8a9256c
+# %% ../../nbs/components/page_renderer.ipynb #133ccd6c
 from typing import Any, List
 
 from fasthtml.common import Div, H1, Span, Button
@@ -34,7 +34,7 @@ from ..html_ids import ManagementHtmlIds
 from .document_list import render_document_list
 from .helpers import DEBUG_MANAGEMENT_RENDER
 
-# %% ../../nbs/components/page_renderer.ipynb #1add562a
+# %% ../../nbs/components/page_renderer.ipynb #6d15ec02
 def render_page_header(
     urls:ManagementUrls,  # URL bundle for route endpoints
 ) -> Any:  # Header element with title and action buttons
@@ -76,7 +76,7 @@ def render_page_header(
         cls=combine_classes(flex_display, justify.between, items.center, m.b(6)),
     )
 
-# %% ../../nbs/components/page_renderer.ipynb #62fd2de3
+# %% ../../nbs/components/page_renderer.ipynb #82232b95
 def render_management_page(
     documents:List[DocumentSummary],  # List of document summaries
     urls:ManagementUrls,  # URL bundle for route endpoints

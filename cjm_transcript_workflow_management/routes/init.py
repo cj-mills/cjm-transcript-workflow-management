@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['init_management_routers']
 
-# %% ../../nbs/routes/init.ipynb #28d6add8
+# %% ../../nbs/routes/init.ipynb #d83e89a2
 from typing import List, Dict, Callable, Tuple
 
 from fasthtml.common import APIRouter
@@ -14,7 +14,7 @@ from ..models import ManagementUrls
 from ..services.management import ManagementService
 from .documents import init_document_router
 
-# %% ../../nbs/routes/init.ipynb #1328bac3
+# %% ../../nbs/routes/init.ipynb #49fc88fe
 def init_management_routers(
     service:ManagementService,  # Service for graph queries
     prefix:str,  # Base prefix for management routes (e.g., "/manage")

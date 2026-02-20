@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['DEBUG_MANAGEMENT_ROUTES']
 
-# %% ../../nbs/routes/core.ipynb #c5978900
+# %% ../../nbs/routes/core.ipynb #5c4a2edc
 from ..services.management import ManagementService
 
 # Debug flag for route tracing

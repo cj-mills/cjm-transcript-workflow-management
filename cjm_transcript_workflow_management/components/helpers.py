@@ -6,7 +6,7 @@
 __all__ = ['DEBUG_MANAGEMENT_RENDER', 'render_section_header', 'render_icon_button', 'render_media_type_badge', 'render_alert',
            'render_delete_modal', 'render_empty_state']
 
-# %% ../../nbs/components/helpers.ipynb #68a88103
+# %% ../../nbs/components/helpers.ipynb #06c1e20e
 from typing import Any, Optional
 
 from fasthtml.common import Div, Span, H3, Button, Form
@@ -38,7 +38,7 @@ from cjm_fasthtml_lucide_icons.factory import lucide_icon
 # Debug flag
 DEBUG_MANAGEMENT_RENDER = False
 
-# %% ../../nbs/components/helpers.ipynb #8dc3b582
+# %% ../../nbs/components/helpers.ipynb #9bf66e39
 def render_section_header(
     title:str,  # Section title text
     icon_name:str,  # Lucide icon name (kebab-case)
@@ -53,7 +53,7 @@ def render_section_header(
         )
     )
 
-# %% ../../nbs/components/helpers.ipynb #9130f69b
+# %% ../../nbs/components/helpers.ipynb #59d3f8ce
 def render_icon_button(
     icon_name:str,  # Lucide icon name (kebab-case)
     label:str,  # Accessible label text
@@ -72,7 +72,7 @@ def render_icon_button(
         **kwargs
     )
 
-# %% ../../nbs/components/helpers.ipynb #b255a7c0
+# %% ../../nbs/components/helpers.ipynb #9bf7992d
 def render_media_type_badge(
     media_type:str,  # Media type string (e.g., "audio")
 ) -> Any:  # Badge element
@@ -82,7 +82,7 @@ def render_media_type_badge(
         cls=combine_classes(badge, badge_styles.outline, badge_sizes.sm)
     )
 
-# %% ../../nbs/components/helpers.ipynb #6d37fd3e
+# %% ../../nbs/components/helpers.ipynb #3c80ecfb
 def render_alert(
     message:str,  # Alert message text
     color:str=None,  # DaisyUI alert color class (e.g., alert_colors.success)
@@ -95,7 +95,7 @@ def render_alert(
     if alert_id: kwargs["id"] = alert_id
     return Div(Span(message), **kwargs)
 
-# %% ../../nbs/components/helpers.ipynb #8ea6d7e5
+# %% ../../nbs/components/helpers.ipynb #94713225
 def render_delete_modal(
     modal_id:str,  # HTML ID for the dialog element
     body_id:str,  # HTML ID for the modal body (for HTMX swaps)
@@ -133,7 +133,7 @@ def render_delete_modal(
         cls=str(modal)
     )
 
-# %% ../../nbs/components/helpers.ipynb #29a6519b
+# %% ../../nbs/components/helpers.ipynb #fc639019
 def render_empty_state(
     message:str="No documents found.",  # Primary message
     detail:str="Complete a workflow to create a document, or import one.",  # Secondary detail

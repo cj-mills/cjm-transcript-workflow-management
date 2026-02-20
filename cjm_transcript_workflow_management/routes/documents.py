@@ -5,7 +5,7 @@
 # %% auto #0
 __all__ = ['init_document_router']
 
-# %% ../../nbs/routes/documents.ipynb #bdf29a2e
+# %% ../../nbs/routes/documents.ipynb #764b2783
 from typing import Dict, Callable, Tuple
 
 from fasthtml.common import APIRouter, Div, P
@@ -19,7 +19,7 @@ from .core import DEBUG_MANAGEMENT_ROUTES
 
 from cjm_fasthtml_daisyui.components.feedback.alert import alert_colors
 
-# %% ../../nbs/routes/documents.ipynb #7d63867e
+# %% ../../nbs/routes/documents.ipynb #eba8fa7c
 def init_document_router(
     service:ManagementService,  # Service for graph queries
     prefix:str,  # Route prefix (e.g., "/manage/documents")
