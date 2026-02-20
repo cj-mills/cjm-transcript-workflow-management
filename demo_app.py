@@ -20,26 +20,15 @@ from cjm_plugin_system.core.scheduling import SafetyScheduler
 # DaisyUI components
 from cjm_fasthtml_daisyui.core.resources import get_daisyui_headers
 from cjm_fasthtml_daisyui.core.testing import create_theme_persistence_script
-from cjm_fasthtml_daisyui.components.data_display.badge import (
-    badge, badge_colors, badge_styles, badge_sizes
-)
-from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
-
-# Tailwind utilities
-from cjm_fasthtml_tailwind.utilities.spacing import p, m
-from cjm_fasthtml_tailwind.utilities.sizing import container, max_w
-from cjm_fasthtml_tailwind.utilities.typography import font_size, font_weight
-from cjm_fasthtml_tailwind.utilities.flexbox_and_grid import (
-    flex_display, flex_direction, justify, items, gap,
-)
-from cjm_fasthtml_tailwind.core.base import combine_classes
 
 # App core
 from cjm_fasthtml_app_core.core.routing import register_routes
 from cjm_fasthtml_app_core.core.htmx import handle_htmx_request
 
 # Library imports
-from cjm_transcript_workflow_management.html_ids import ManagementHtmlIds
+from cjm_transcript_workflow_management.services.management import ManagementService
+from cjm_transcript_workflow_management.routes.init import init_management_routers
+from cjm_transcript_workflow_management.components.page_renderer import render_management_page
 
 
 # =============================================================================
@@ -51,57 +40,6 @@ TEST_GRAPH_DB = Path(__file__).parent / "test_files" / "graph.db"
 
 # Graph plugin name
 GRAPH_PLUGIN_NAME = "cjm-graph-plugin-sqlite"
-
-
-# =============================================================================
-# Demo Page Renderer
-# =============================================================================
-
-def render_demo_page(plugin_manager, plugin_loaded):
-    """Create the demo page with placeholder management content."""
-
-    status_text = "Plugin Loaded" if plugin_loaded else "Plugin Not Available"
-    status_color = badge_colors.success if plugin_loaded else badge_colors.error
-
-    return Div(
-        # Header
-        Div(
-            H1("Graph Management", cls=combine_classes(font_size._3xl, font_weight.bold)),
-            Span(
-                status_text,
-                cls=combine_classes(badge, badge_styles.outline, badge_sizes.sm, status_color)
-            ),
-            cls=combine_classes(flex_display, justify.between, items.center, m.b(4))
-        ),
-        P(
-            "Manage context graph documents — list, inspect, delete, and import/export graph spines.",
-            cls=combine_classes(text_dui.base_content.opacity(70), m.b(6))
-        ),
-
-        # Placeholder for document list (will be replaced in Phase 3)
-        Div(
-            P(
-                f"Graph DB: {TEST_GRAPH_DB}",
-                cls=combine_classes(font_size.sm, text_dui.base_content.opacity(60))
-            ),
-            P(
-                f"Database exists: {TEST_GRAPH_DB.exists()}",
-                cls=combine_classes(font_size.sm, text_dui.base_content.opacity(60))
-            ),
-            P(
-                "Document list will be rendered here in Phase 3.",
-                cls=combine_classes(font_size.sm, text_dui.base_content.opacity(50), m.t(4))
-            ),
-            id=ManagementHtmlIds.DOCUMENT_LIST,
-        ),
-
-        id=ManagementHtmlIds.PAGE_CONTENT,
-        cls=combine_classes(
-            container, max_w._5xl, m.x.auto,
-            flex_display, flex_direction.col,
-            p(4), gap(4)
-        )
-    )
 
 
 # =============================================================================
@@ -160,20 +98,41 @@ def main():
     print(f"  Test database exists: {TEST_GRAPH_DB.exists()}")
 
     # -------------------------------------------------------------------------
+    # Create service and routes
+    # -------------------------------------------------------------------------
+    service = ManagementService(plugin_manager, GRAPH_PLUGIN_NAME)
+    print(f"\n[Management Service]")
+    print(f"  Available: {service.is_available()}")
+
+    mgmt_routers, urls, mgmt_routes = init_management_routers(
+        service=service,
+        prefix="/manage",
+    )
+
+    print(f"\n[Management URLs]")
+    print(f"  list_documents: {urls.list_documents}")
+    print(f"  document_detail: {urls.document_detail}")
+    print(f"  delete_document: {urls.delete_document}")
+    print(f"  delete_selected: {urls.delete_selected}")
+
+    # -------------------------------------------------------------------------
     # Page routes
     # -------------------------------------------------------------------------
     @router
-    def index(request):
-        """Demo homepage."""
+    async def index(request):
+        """Demo homepage — loads document list on page load."""
+        documents = await service.list_documents_async()
         return handle_htmx_request(
             request,
-            lambda: render_demo_page(plugin_manager, plugin_loaded)
+            lambda: render_management_page(documents, urls)
         )
 
     # -------------------------------------------------------------------------
     # Register routes
     # -------------------------------------------------------------------------
     register_routes(app, router)
+    for mgmt_router in mgmt_routers:
+        register_routes(app, mgmt_router)
 
     # Debug output
     print("\n" + "=" * 70)

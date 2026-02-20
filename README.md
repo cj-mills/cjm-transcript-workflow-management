@@ -12,28 +12,60 @@ pip install cjm_transcript_workflow_management
 ## Project Structure
 
     nbs/
+    ├── components/ (3)
+    │   ├── document_list.ipynb  # Document list table with toolbar and row actions
+    │   ├── helpers.ipynb        # Shared rendering helpers for the management interface
+    │   └── page_renderer.ipynb  # Main management page renderer composing header, toolbar buttons, and document list
+    ├── routes/ (3)
+    │   ├── core.ipynb       # Request helpers for management routes
+    │   ├── documents.ipynb  # Document list, detail, and delete routes
+    │   └── init.ipynb       # Router assembly for management routes
     ├── services/ (1)
     │   └── management.ipynb  # Service layer wrapping graph plugin operations for document management
     ├── html_ids.ipynb  # HTML ID constants for the graph management interface
     ├── models.ipynb    # Data models for the graph management interface
     └── utils.ipynb     # Formatting utilities for the management interface
 
-Total: 4 notebooks across 3 directories
+Total: 10 notebooks across 3 directories
 
 ## Module Dependencies
 
 ``` mermaid
 graph LR
+    components_document_list[components.document_list<br/>document_list]
+    components_helpers[components.helpers<br/>helpers]
+    components_page_renderer[components.page_renderer<br/>page_renderer]
     html_ids[html_ids<br/>html_ids]
     models[models<br/>Models]
+    routes_core[routes.core<br/>core]
+    routes_documents[routes.documents<br/>documents]
+    routes_init[routes.init<br/>init]
     services_management[services.management<br/>services.management]
     utils[utils<br/>utils]
 
-    services_management --> models
+    components_document_list --> components_helpers
+    components_document_list --> utils
+    components_document_list --> models
+    components_document_list --> html_ids
+    components_page_renderer --> components_helpers
+    components_page_renderer --> models
+    components_page_renderer --> components_document_list
+    components_page_renderer --> html_ids
+    routes_core --> services_management
+    routes_documents --> services_management
+    routes_documents --> components_helpers
+    routes_documents --> components_document_list
+    routes_documents --> html_ids
+    routes_documents --> routes_core
+    routes_documents --> models
+    routes_init --> services_management
+    routes_init --> routes_documents
+    routes_init --> models
     services_management --> utils
+    services_management --> models
 ```
 
-*2 cross-module dependencies detected*
+*20 cross-module dependencies detected*
 
 ## CLI Reference
 
@@ -42,6 +74,183 @@ No CLI commands found in this project.
 ## Module Overview
 
 Detailed documentation for each module in the project:
+
+### core (`core.ipynb`)
+
+> Request helpers for management routes
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.routes.core import (
+    DEBUG_MANAGEMENT_ROUTES
+)
+```
+
+#### Variables
+
+``` python
+DEBUG_MANAGEMENT_ROUTES = False
+```
+
+### document_list (`document_list.ipynb`)
+
+> Document list table with toolbar and row actions
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.components.document_list import (
+    render_toolbar,
+    render_document_row,
+    render_document_table,
+    render_list_scripts,
+    render_document_list
+)
+```
+
+#### Functions
+
+``` python
+def render_toolbar(
+    urls:ManagementUrls,  # URL bundle for route endpoints
+    doc_count:int=0,  # Number of documents in the list
+) -> Any:  # Toolbar element
+    "Render the document list toolbar with Select All and bulk actions."
+```
+
+``` python
+def render_document_row(
+    doc:DocumentSummary,  # Document summary data
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Table row element
+    "Render a single document row in the list table."
+```
+
+``` python
+def render_document_table(
+    documents:List[DocumentSummary],  # List of document summaries
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Table element wrapped in scrollable container
+    "Render the document list table."
+```
+
+``` python
+def render_list_scripts(
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Script element
+    "Render client-side JavaScript for checkbox and modal management."
+```
+
+``` python
+def render_document_list(
+    documents:List[DocumentSummary],  # List of document summaries
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Complete document list component
+    "Render the complete document list with toolbar, table, and modals."
+```
+
+### documents (`documents.ipynb`)
+
+> Document list, detail, and delete routes
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.routes.documents import (
+    init_document_router
+)
+```
+
+#### Functions
+
+``` python
+def init_document_router(
+    service:ManagementService,  # Service for graph queries
+    prefix:str,  # Route prefix (e.g., "/manage/documents")
+    urls:ManagementUrls,  # URL bundle (populated after init)
+) -> Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)
+    "Initialize document list, detail, and delete routes."
+```
+
+### helpers (`helpers.ipynb`)
+
+> Shared rendering helpers for the management interface
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.components.helpers import (
+    DEBUG_MANAGEMENT_RENDER,
+    render_section_header,
+    render_icon_button,
+    render_media_type_badge,
+    render_alert,
+    render_delete_modal,
+    render_empty_state
+)
+```
+
+#### Functions
+
+``` python
+def render_section_header(
+    title:str,  # Section title text
+    icon_name:str,  # Lucide icon name (kebab-case)
+) -> Any:  # Header element with icon and title
+    "Render a section header with icon."
+```
+
+``` python
+def render_icon_button(
+    icon_name:str,  # Lucide icon name (kebab-case)
+    label:str,  # Accessible label text
+    color:str=None,  # DaisyUI button color class (e.g., btn_colors.error)
+    size:str=None,  # DaisyUI button size class (e.g., btn_sizes.sm)
+    **kwargs  # Additional HTML attributes (onclick, hx_post, etc.)
+) -> Any:  # Button element with icon
+    "Render a button with an icon and accessible label."
+```
+
+``` python
+def render_media_type_badge(
+    media_type:str,  # Media type string (e.g., "audio")
+) -> Any:  # Badge element
+    "Render a badge for media type display."
+```
+
+``` python
+def render_alert(
+    message:str,  # Alert message text
+    color:str=None,  # DaisyUI alert color class (e.g., alert_colors.success)
+    alert_id:str="",  # Optional HTML ID for the alert
+) -> Any:  # Alert element
+    "Render a DaisyUI alert message."
+```
+
+``` python
+def render_delete_modal(
+    modal_id:str,  # HTML ID for the dialog element
+    body_id:str,  # HTML ID for the modal body (for HTMX swaps)
+    title:str="Delete Document?",  # Modal title text
+    confirm_attrs:dict=None,  # Attributes for the confirm button (hx_delete, etc.)
+) -> Any:  # Dialog element
+    "Render a delete confirmation modal using HTML5 dialog."
+```
+
+``` python
+def render_empty_state(
+    message:str="No documents found.",  # Primary message
+    detail:str="Complete a workflow to create a document, or import one.",  # Secondary detail
+) -> Any:  # Empty state element
+    "Render an empty state placeholder."
+```
+
+#### Variables
+
+``` python
+DEBUG_MANAGEMENT_RENDER = False
+```
 
 ### html_ids (`html_ids.ipynb`)
 
@@ -65,6 +274,28 @@ class ManagementHtmlIds:
             id_str: str  # The HTML ID to convert
         ) -> str:  # CSS selector with # prefix
         "Convert an ID to a CSS selector format."
+```
+
+### init (`init.ipynb`)
+
+> Router assembly for management routes
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.routes.init import (
+    init_management_routers
+)
+```
+
+#### Functions
+
+``` python
+def init_management_routers(
+    service:ManagementService,  # Service for graph queries
+    prefix:str,  # Base prefix for management routes (e.g., "/manage")
+) -> Tuple[List[APIRouter], ManagementUrls, Dict[str, Callable]]:  # (routers, urls, routes)
+    "Initialize and return all management routers with URL bundle."
 ```
 
 ### services.management (`management.ipynb`)
@@ -349,6 +580,37 @@ class ManagementUrls:
     export_document: str  # GET: + /{doc_id}
     export_all: str  # GET: full database export
     import_graph: str  # POST: file upload import
+```
+
+### page_renderer (`page_renderer.ipynb`)
+
+> Main management page renderer composing header, toolbar buttons, and
+> document list
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.components.page_renderer import (
+    render_page_header,
+    render_management_page
+)
+```
+
+#### Functions
+
+``` python
+def render_page_header(
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Header element with title and action buttons
+    "Render the management page header with title and top-level actions."
+```
+
+``` python
+def render_management_page(
+    documents:List[DocumentSummary],  # List of document summaries
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Complete management page component
+    "Render the complete management page with header and document list."
 ```
 
 ### utils (`utils.ipynb`)
