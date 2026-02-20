@@ -12,14 +12,17 @@ pip install cjm_transcript_workflow_management
 ## Project Structure
 
     nbs/
-    ├── components/ (4)
+    ├── components/ (5)
     │   ├── document_detail.ipynb  # Document detail dashboard with info, stats, integrity checks, and samples
     │   ├── document_list.ipynb    # Document list table with toolbar and row actions
     │   ├── helpers.ipynb          # Shared rendering helpers for the management interface
+    │   ├── import_controls.ipynb  # Import UI with file input, merge strategy selector, and result display
     │   └── page_renderer.ipynb    # Main management page renderer composing header, toolbar buttons, and document list
-    ├── routes/ (3)
+    ├── routes/ (5)
     │   ├── core.ipynb       # Request helpers for management routes
     │   ├── documents.ipynb  # Document list, detail, and delete routes
+    │   ├── export_.ipynb    # Export routes for single document and full database JSON file downloads
+    │   ├── import_.ipynb    # Import route for file upload with JSON validation and merge strategy
     │   └── init.ipynb       # Router assembly for management routes
     ├── services/ (1)
     │   └── management.ipynb  # Service layer wrapping graph plugin operations for document management
@@ -27,7 +30,7 @@ pip install cjm_transcript_workflow_management
     ├── models.ipynb    # Data models for the graph management interface
     └── utils.ipynb     # Formatting utilities for the management interface
 
-Total: 11 notebooks across 3 directories
+Total: 14 notebooks across 3 directories
 
 ## Module Dependencies
 
@@ -36,43 +39,61 @@ graph LR
     components_document_detail[components.document_detail<br/>document_detail]
     components_document_list[components.document_list<br/>document_list]
     components_helpers[components.helpers<br/>helpers]
+    components_import_controls[components.import_controls<br/>import_controls]
     components_page_renderer[components.page_renderer<br/>page_renderer]
     html_ids[html_ids<br/>html_ids]
     models[models<br/>Models]
     routes_core[routes.core<br/>core]
     routes_documents[routes.documents<br/>documents]
+    routes_export_[routes.export_<br/>export_]
+    routes_import_[routes.import_<br/>import_]
     routes_init[routes.init<br/>init]
     services_management[services.management<br/>services.management]
     utils[utils<br/>utils]
 
+    components_document_detail --> html_ids
+    components_document_detail --> models
     components_document_detail --> utils
     components_document_detail --> components_helpers
-    components_document_detail --> models
-    components_document_detail --> html_ids
-    components_document_list --> utils
-    components_document_list --> models
     components_document_list --> html_ids
+    components_document_list --> utils
     components_document_list --> components_helpers
-    components_page_renderer --> models
+    components_document_list --> models
+    components_import_controls --> html_ids
+    components_import_controls --> components_helpers
+    components_import_controls --> models
     components_page_renderer --> html_ids
     components_page_renderer --> components_document_list
+    components_page_renderer --> models
     components_page_renderer --> components_helpers
+    components_page_renderer --> components_import_controls
     routes_core --> services_management
-    routes_documents --> services_management
-    routes_documents --> routes_core
-    routes_documents --> components_document_detail
-    routes_documents --> components_document_list
-    routes_documents --> models
-    routes_documents --> components_helpers
     routes_documents --> html_ids
-    routes_init --> services_management
-    routes_init --> models
+    routes_documents --> components_helpers
+    routes_documents --> services_management
+    routes_documents --> components_page_renderer
+    routes_documents --> routes_core
+    routes_documents --> components_document_list
+    routes_documents --> components_document_detail
+    routes_documents --> models
+    routes_export_ --> services_management
+    routes_export_ --> routes_core
+    routes_import_ --> html_ids
+    routes_import_ --> services_management
+    routes_import_ --> models
+    routes_import_ --> routes_core
+    routes_import_ --> components_document_list
+    routes_import_ --> components_import_controls
     routes_init --> routes_documents
+    routes_init --> services_management
+    routes_init --> routes_export_
+    routes_init --> routes_import_
+    routes_init --> models
     services_management --> models
     services_management --> utils
 ```
 
-*25 cross-module dependencies detected*
+*40 cross-module dependencies detected*
 
 ## CLI Reference
 
@@ -307,6 +328,44 @@ def init_document_router(
     "Initialize document list, detail, and delete routes."
 ```
 
+### export\_ (`export_.ipynb`)
+
+> Export routes for single document and full database JSON file
+> downloads
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.routes.export_ import (
+    init_export_router
+)
+```
+
+#### Functions
+
+``` python
+def _sanitize_filename(
+    name:str,  # Raw filename string
+) -> str:  # Filesystem-safe filename
+    "Remove characters unsafe for filenames."
+```
+
+``` python
+def _bundle_to_json_response(
+    bundle_dict:dict,  # Serialized ExportBundle
+    filename:str,  # Download filename (e.g., "document.json")
+) -> Response:  # Starlette Response with JSON content and download headers
+    "Create a file download response from an export bundle dict."
+```
+
+``` python
+def init_export_router(
+    service:ManagementService,  # Service for graph queries
+    prefix:str,  # Route prefix (e.g., "/manage/export")
+) -> Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)
+    "Initialize export routes for single document and full database downloads."
+```
+
 ### helpers (`helpers.ipynb`)
 
 > Shared rendering helpers for the management interface
@@ -408,6 +467,65 @@ class ManagementHtmlIds:
             id_str: str  # The HTML ID to convert
         ) -> str:  # CSS selector with # prefix
         "Convert an ID to a CSS selector format."
+```
+
+### import\_ (`import_.ipynb`)
+
+> Import route for file upload with JSON validation and merge strategy
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.routes.import_ import (
+    init_import_router
+)
+```
+
+#### Functions
+
+``` python
+def init_import_router(
+    service:ManagementService,  # Service for graph queries
+    prefix:str,  # Route prefix (e.g., "/manage/import")
+    urls:ManagementUrls,  # URL bundle (for list refresh)
+) -> Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)
+    "Initialize import route for file upload with merge strategy."
+```
+
+### import_controls (`import_controls.ipynb`)
+
+> Import UI with file input, merge strategy selector, and result display
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.components.import_controls import (
+    MERGE_STRATEGIES,
+    render_import_result,
+    render_import_controls
+)
+```
+
+#### Functions
+
+``` python
+def render_import_result(
+    result:ImportResult,  # Import operation result
+) -> Any:  # Alert element showing import outcome
+    "Render the import result as a success or error alert."
+```
+
+``` python
+def render_import_controls(
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Import form with file input, strategy selector, and result area
+    "Render the import section with file input, merge strategy, and submit button."
+```
+
+#### Variables
+
+``` python
+MERGE_STRATEGIES = [3 items]
 ```
 
 ### init (`init.ipynb`)
@@ -707,11 +825,12 @@ class ImportResult:
 class ManagementUrls:
     "URL bundle for management route endpoints."
     
-    list_documents: str  # GET: document list page
-    document_detail: str  # GET: + /{doc_id}
-    delete_document: str  # DELETE: + /{doc_id}
+    management_page: str  # GET: full page (header + import + list)
+    list_documents: str  # GET: document list only
+    document_detail: str  # GET: + ?doc_id=...
+    delete_document: str  # POST: + doc_id in form data
     delete_selected: str  # POST: bulk delete
-    export_document: str  # GET: + /{doc_id}
+    export_document: str  # GET: + ?doc_id=...
     export_all: str  # GET: full database export
     import_graph: str  # POST: file upload import
 ```
@@ -744,7 +863,7 @@ def render_management_page(
     documents:List[DocumentSummary],  # List of document summaries
     urls:ManagementUrls,  # URL bundle for route endpoints
 ) -> Any:  # Complete management page component
-    "Render the complete management page with header and document list."
+    "Render the complete management page with header, import section, and document list."
 ```
 
 ### utils (`utils.ipynb`)

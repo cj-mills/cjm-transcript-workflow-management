@@ -10,7 +10,7 @@ __all__ = ['render_detail_header', 'render_document_info', 'render_segment_stats
 # %% ../../nbs/components/document_detail.ipynb #798ab400
 from typing import Any, List, Optional
 
-from fasthtml.common import Div, Span, H2, H3, P, Button
+from fasthtml.common import Div, Span, H2, H3, P, A, Button
 
 # DaisyUI components
 from cjm_fasthtml_daisyui.components.actions.button import (
@@ -104,21 +104,22 @@ def render_detail_header(
                 btn, btn_styles.ghost, btn_sizes.sm,
                 flex_display, items.center, gap(1)
             ),
-            hx_get=urls.list_documents,
+            hx_get=urls.management_page,
             hx_target=f"#{ManagementHtmlIds.PAGE_CONTENT}",
-            hx_swap="innerHTML",
+            hx_swap="outerHTML",
         ),
         # Right: Export + Delete
         Div(
-            Button(
+            # Export: plain link for file download
+            A(
                 lucide_icon("download", size=4),
                 "Export",
                 cls=combine_classes(
                     btn, btn_styles.outline, btn_sizes.sm,
                     flex_display, items.center, gap(1)
                 ),
-                disabled=True,
-                title="Export (coming in Phase 5)",
+                href=f"{urls.export_document}?doc_id={detail.document_id}",
+                download=True,
             ),
             Button(
                 lucide_icon("trash-2", size=4),
@@ -315,9 +316,9 @@ def render_detail_scripts(
         var confirmBtn = document.querySelector('#{ManagementHtmlIds.DELETE_MODAL} [data-delete-confirm]');
         if (confirmBtn) {{
             confirmBtn.setAttribute('hx-post', '{urls.delete_document}');
-            confirmBtn.setAttribute('hx-vals', JSON.stringify({{doc_id: docId}}));
+            confirmBtn.setAttribute('hx-vals', JSON.stringify({{doc_id: docId, return_page: 'true'}}));
             confirmBtn.setAttribute('hx-target', '#{ManagementHtmlIds.PAGE_CONTENT}');
-            confirmBtn.setAttribute('hx-swap', 'innerHTML');
+            confirmBtn.setAttribute('hx-swap', 'outerHTML');
             htmx.process(confirmBtn);
         }}
     }}
@@ -385,9 +386,9 @@ def render_detail_error(
                 btn, btn_styles.outline, btn_sizes.sm,
                 flex_display, items.center, gap(1), m.t(4)
             ),
-            hx_get=urls.list_documents,
+            hx_get=urls.management_page,
             hx_target=f"#{ManagementHtmlIds.PAGE_CONTENT}",
-            hx_swap="innerHTML",
+            hx_swap="outerHTML",
         ))
     
     return Div(

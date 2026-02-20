@@ -90,10 +90,11 @@ class ImportResult:
 @dataclass
 class ManagementUrls:
     """URL bundle for management route endpoints."""
-    list_documents: str     # GET: document list page
-    document_detail: str    # GET: + /{doc_id}
-    delete_document: str    # DELETE: + /{doc_id}
+    management_page: str    # GET: full page (header + import + list)
+    list_documents: str     # GET: document list only
+    document_detail: str    # GET: + ?doc_id=...
+    delete_document: str    # POST: + doc_id in form data
     delete_selected: str    # POST: bulk delete
-    export_document: str    # GET: + /{doc_id}
+    export_document: str    # GET: + ?doc_id=...
     export_all: str         # GET: full database export
     import_graph: str       # POST: file upload import

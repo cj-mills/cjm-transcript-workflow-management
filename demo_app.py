@@ -110,10 +110,14 @@ def main():
     )
 
     print(f"\n[Management URLs]")
+    print(f"  management_page: {urls.management_page}")
     print(f"  list_documents: {urls.list_documents}")
     print(f"  document_detail: {urls.document_detail}")
     print(f"  delete_document: {urls.delete_document}")
     print(f"  delete_selected: {urls.delete_selected}")
+    print(f"  export_document: {urls.export_document}")
+    print(f"  export_all: {urls.export_all}")
+    print(f"  import_graph: {urls.import_graph}")
 
     # -------------------------------------------------------------------------
     # Page routes

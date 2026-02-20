@@ -8,7 +8,7 @@ __all__ = ['render_page_header', 'render_management_page']
 # %% ../../nbs/components/page_renderer.ipynb #133ccd6c
 from typing import Any, List
 
-from fasthtml.common import Div, H1, Span, Button
+from fasthtml.common import Div, H1, A, Span, Button
 
 # DaisyUI components
 from cjm_fasthtml_daisyui.components.actions.button import (
@@ -32,6 +32,7 @@ from cjm_fasthtml_lucide_icons.factory import lucide_icon
 from ..models import DocumentSummary, ManagementUrls
 from ..html_ids import ManagementHtmlIds
 from .document_list import render_document_list
+from .import_controls import render_import_controls
 from .helpers import DEBUG_MANAGEMENT_RENDER
 
 # %% ../../nbs/components/page_renderer.ipynb #6d15ec02
@@ -51,6 +52,7 @@ def render_page_header(
         ),
         # Action buttons
         Div(
+            # Import: toggles import section visibility
             Button(
                 lucide_icon("upload", size=4),
                 "Import",
@@ -58,18 +60,18 @@ def render_page_header(
                     btn, btn_styles.outline, btn_sizes.sm,
                     flex_display, items.center, gap(1)
                 ),
-                disabled=True,
-                title="Import (coming in Phase 5)",
+                onclick=f"document.getElementById('{ManagementHtmlIds.IMPORT_SECTION}').classList.toggle('hidden')",
             ),
-            Button(
+            # Export All: plain link for file download
+            A(
                 lucide_icon("download", size=4),
                 "Export All",
                 cls=combine_classes(
                     btn, btn_styles.outline, btn_sizes.sm,
                     flex_display, items.center, gap(1)
                 ),
-                disabled=True,
-                title="Export All (coming in Phase 5)",
+                href=urls.export_all,
+                download=True,
             ),
             cls=combine_classes(flex_display, gap(2)),
         ),
@@ -81,12 +83,19 @@ def render_management_page(
     documents:List[DocumentSummary],  # List of document summaries
     urls:ManagementUrls,  # URL bundle for route endpoints
 ) -> Any:  # Complete management page component
-    """Render the complete management page with header and document list."""
+    """Render the complete management page with header, import section, and document list."""
     if DEBUG_MANAGEMENT_RENDER:
         print(f"[RENDER] management_page: {len(documents)} docs")
     
+    # Import controls (hidden by default, toggled by Import button)
+    import_section = render_import_controls(urls)
+    import_section.attrs['cls'] = combine_classes(
+        import_section.attrs.get('cls', ''), 'hidden'
+    )
+    
     return Div(
         render_page_header(urls),
+        import_section,
         render_document_list(documents, urls),
         id=ManagementHtmlIds.PAGE_CONTENT,
         cls=combine_classes(

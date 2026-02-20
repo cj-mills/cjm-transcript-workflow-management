@@ -9,7 +9,7 @@ __all__ = ['render_toolbar', 'render_document_row', 'render_document_table', 're
 from typing import Any, List
 
 from fasthtml.common import (
-    Div, Span, Table, Thead, Tbody, Tr, Th, Td,
+    Div, Span, A, Table, Thead, Tbody, Tr, Th, Td,
     Button, Input, Label, P
 )
 
@@ -123,11 +123,13 @@ def render_document_row(
                     hx_target=f"#{ManagementHtmlIds.PAGE_CONTENT}",
                     hx_swap="innerHTML",
                 ),
-                # Export
-                render_icon_button(
-                    "download", "Export",
-                    size=str(btn_sizes.sm),
-                    hx_get=f"{urls.export_document}/{doc_id}",
+                # Export: plain link for file download
+                A(
+                    lucide_icon("download", size=4),
+                    title="Export",
+                    cls=combine_classes(btn, btn_styles.ghost, btn_sizes.sm),
+                    href=f"{urls.export_document}?doc_id={doc_id}",
+                    download=True,
                 ),
                 # Delete
                 render_icon_button(

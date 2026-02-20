@@ -13,6 +13,8 @@ from fasthtml.common import APIRouter
 from ..models import ManagementUrls
 from ..services.management import ManagementService
 from .documents import init_document_router
+from .export_ import init_export_router
+from .import_ import init_import_router
 
 # %% ../../nbs/routes/init.ipynb #49fc88fe
 def init_management_routers(
@@ -22,6 +24,7 @@ def init_management_routers(
     """Initialize and return all management routers with URL bundle."""
     # Create empty URL bundle (populated after routes are defined)
     urls = ManagementUrls(
+        management_page="",
         list_documents="",
         document_detail="",
         delete_document="",
@@ -36,18 +39,27 @@ def init_management_routers(
         service, f"{prefix}/documents", urls
     )
     
+    # Initialize export router
+    export_router, export_routes = init_export_router(
+        service, f"{prefix}/export"
+    )
+    
+    # Initialize import router
+    import_router, import_routes = init_import_router(
+        service, f"{prefix}/import", urls
+    )
+    
     # Populate URL bundle using .to() on route functions
+    urls.management_page = doc_routes["management_page"].to()
     urls.list_documents = doc_routes["list_documents"].to()
     urls.document_detail = doc_routes["document_detail"].to()
     urls.delete_document = doc_routes["delete_document"].to()
     urls.delete_selected = doc_routes["delete_selected"].to()
+    urls.export_document = export_routes["export_document"].to()
+    urls.export_all = export_routes["export_all"].to()
+    urls.import_graph = import_routes["import_graph"].to()
     
-    # Export/import URLs will be populated in Phase 5
-    urls.export_document = f"{prefix}/export/document"
-    urls.export_all = f"{prefix}/export/all"
-    urls.import_graph = f"{prefix}/import"
-    
-    routers = [doc_router]
-    all_routes = {**doc_routes}
+    routers = [doc_router, export_router, import_router]
+    all_routes = {**doc_routes, **export_routes, **import_routes}
     
     return routers, urls, all_routes

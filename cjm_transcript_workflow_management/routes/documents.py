@@ -16,6 +16,7 @@ from ..components.document_list import render_document_list
 from cjm_transcript_workflow_management.components.document_detail import (
     render_document_detail, render_detail_error
 )
+from ..components.page_renderer import render_management_page
 from ..components.helpers import render_alert
 from ..html_ids import ManagementHtmlIds
 from .core import DEBUG_MANAGEMENT_ROUTES
@@ -31,6 +32,17 @@ def init_document_router(
     """Initialize document list, detail, and delete routes."""
     router = APIRouter(prefix=prefix)
     routes = {}
+    
+    @router
+    async def management_page(request):
+        """Return the full management page (header + import + list)."""
+        if DEBUG_MANAGEMENT_ROUTES:
+            print("[ROUTES] management_page called")
+        
+        documents = await service.list_documents_async()
+        return render_management_page(documents, urls)
+    
+    routes["management_page"] = management_page
     
     @router
     async def list_documents(request):
@@ -75,20 +87,23 @@ def init_document_router(
     
     @router.post
     async def delete_document(request):
-        """Delete a single document and return refreshed list."""
+        """Delete a single document and return refreshed content."""
         form_data = await request.form()
         doc_id = form_data.get("doc_id", "")
+        return_page = form_data.get("return_page", "")
         
         if DEBUG_MANAGEMENT_ROUTES:
-            print(f"[ROUTES] delete_document called for {doc_id}")
+            print(f"[ROUTES] delete_document called for {doc_id}, return_page={return_page}")
         
         if doc_id:
             success = await service.delete_document_async(doc_id)
             if DEBUG_MANAGEMENT_ROUTES:
                 print(f"[ROUTES] Delete result: {success}")
         
-        # Refresh the document list
+        # Refresh: return full page (from detail view) or just list (from list view)
         documents = await service.list_documents_async()
+        if return_page:
+            return render_management_page(documents, urls)
         return render_document_list(documents, urls)
     
     routes["delete_document"] = delete_document
