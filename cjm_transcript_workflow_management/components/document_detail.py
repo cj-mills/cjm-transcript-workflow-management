@@ -7,7 +7,7 @@ __all__ = ['render_detail_header', 'render_document_info', 'render_segment_stats
            'render_integrity_checks', 'render_sample_segments', 'render_detail_scripts', 'render_document_detail',
            'render_detail_error']
 
-# %% ../../nbs/components/document_detail.ipynb #02805a78
+# %% ../../nbs/components/document_detail.ipynb #798ab400
 from typing import Any, List, Optional
 
 from fasthtml.common import Div, Span, H2, H3, P, Button
@@ -51,7 +51,7 @@ from cjm_transcript_workflow_management.components.helpers import (
     DEBUG_MANAGEMENT_RENDER
 )
 
-# %% ../../nbs/components/document_detail.ipynb #b24d5f05
+# %% ../../nbs/components/document_detail.ipynb #5d265af0
 # Card styling constants
 _CARD_CLS = combine_classes(card, bg_dui.base_100, shadow.sm)
 
@@ -89,7 +89,7 @@ def _render_check_row(
         cls=combine_classes(flex_display, items.center, gap(2), p.y(1))
     )
 
-# %% ../../nbs/components/document_detail.ipynb #d37f0e83
+# %% ../../nbs/components/document_detail.ipynb #1b8f0e57
 def render_detail_header(
     detail:DocumentDetail,  # Document detail data
     urls:ManagementUrls,  # URL bundle for route endpoints
@@ -137,7 +137,7 @@ def render_detail_header(
         cls=combine_classes(flex_display, justify.between, items.center, m.b(4)),
     )
 
-# %% ../../nbs/components/document_detail.ipynb #95f028a1
+# %% ../../nbs/components/document_detail.ipynb #d1bec12b
 def render_document_info(
     detail:DocumentDetail,  # Document detail data
 ) -> Any:  # Card element with document info
@@ -158,7 +158,7 @@ def render_document_info(
         cls=combine_classes(_CARD_CLS, flex._1, min_w("280px")),
     )
 
-# %% ../../nbs/components/document_detail.ipynb #a167e7b1
+# %% ../../nbs/components/document_detail.ipynb #72f3e4a4
 def render_segment_stats(
     detail:DocumentDetail,  # Document detail data
 ) -> Any:  # Card element with segment stats
@@ -177,7 +177,7 @@ def render_segment_stats(
         cls=combine_classes(_CARD_CLS, flex._1, min_w("280px")),
     )
 
-# %% ../../nbs/components/document_detail.ipynb #667f2857
+# %% ../../nbs/components/document_detail.ipynb #9d32c186
 def render_sources_info(
     detail:DocumentDetail,  # Document detail data
 ) -> Any:  # Card element with source plugin info
@@ -196,7 +196,7 @@ def render_sources_info(
         cls=combine_classes(_CARD_CLS, flex._1, min_w("280px")),
     )
 
-# %% ../../nbs/components/document_detail.ipynb #543f8313
+# %% ../../nbs/components/document_detail.ipynb #c0a76b8d
 def render_integrity_checks(
     detail:DocumentDetail,  # Document detail data
 ) -> Any:  # Card element with integrity check rows
@@ -239,7 +239,7 @@ def render_integrity_checks(
         cls=str(_CARD_CLS),
     )
 
-# %% ../../nbs/components/document_detail.ipynb #de5eab53
+# %% ../../nbs/components/document_detail.ipynb #446c985e
 def _render_sample_row(
     sample:SegmentSample,  # Segment sample data
 ) -> Any:  # Flexbox row with index, text, and timing
@@ -280,7 +280,7 @@ def _render_sample_list(
         cls=combine_classes(flex_display, flex_direction.col),
     )
 
-# %% ../../nbs/components/document_detail.ipynb #6dbfb82a
+# %% ../../nbs/components/document_detail.ipynb #6f1e9c2f
 def render_sample_segments(
     detail:DocumentDetail,  # Document detail data
 ) -> Any:  # Card element with sample segment lists
@@ -299,7 +299,7 @@ def render_sample_segments(
         cls=str(_CARD_CLS),
     )
 
-# %% ../../nbs/components/document_detail.ipynb #3ccbc5b7
+# %% ../../nbs/components/document_detail.ipynb #d6dbae45
 def render_detail_scripts(
     urls:ManagementUrls,  # URL bundle for route endpoints
 ) -> Any:  # Script element
@@ -323,7 +323,7 @@ def render_detail_scripts(
     }}
     """)
 
-# %% ../../nbs/components/document_detail.ipynb #bf36e178
+# %% ../../nbs/components/document_detail.ipynb #56a76f12
 def render_document_detail(
     detail:DocumentDetail,  # Document detail data
     urls:ManagementUrls,  # URL bundle for route endpoints
@@ -367,7 +367,7 @@ def render_document_detail(
         cls=combine_classes(flex_display, flex_direction.col, gap(4)),
     )
 
-# %% ../../nbs/components/document_detail.ipynb #6266f784
+# %% ../../nbs/components/document_detail.ipynb #f0298680
 def render_detail_error(
     message:str="Document not found.",  # Error message
     urls:ManagementUrls=None,  # URL bundle for Back to List
