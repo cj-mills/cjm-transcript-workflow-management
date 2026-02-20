@@ -13,6 +13,9 @@ from fasthtml.common import APIRouter, Div, P
 from ..services.management import ManagementService
 from ..models import ManagementUrls
 from ..components.document_list import render_document_list
+from cjm_transcript_workflow_management.components.document_detail import (
+    render_document_detail, render_detail_error
+)
 from ..components.helpers import render_alert
 from ..html_ids import ManagementHtmlIds
 from .core import DEBUG_MANAGEMENT_ROUTES
@@ -45,15 +48,28 @@ def init_document_router(
     routes["list_documents"] = list_documents
     
     @router
-    async def document_detail(request, doc_id:str):
-        """Return document detail view (placeholder for Phase 4)."""
+    async def document_detail(request, doc_id:str=""):
+        """Return document detail dashboard."""
         if DEBUG_MANAGEMENT_ROUTES:
             print(f"[ROUTES] document_detail called for {doc_id}")
         
-        return Div(
-            P(f"Document detail for {doc_id[:12]}... (coming in Phase 4)"),
-            id=ManagementHtmlIds.DOCUMENT_DETAIL,
-        )
+        if not doc_id:
+            return render_detail_error("No document ID provided.", urls=urls)
+        
+        detail = await service.get_document_detail_async(doc_id)
+        
+        if detail is None:
+            if DEBUG_MANAGEMENT_ROUTES:
+                print(f"[ROUTES] Document not found: {doc_id}")
+            return render_detail_error(
+                f"Document {doc_id[:12]}... not found.",
+                urls=urls
+            )
+        
+        if DEBUG_MANAGEMENT_ROUTES:
+            print(f"[ROUTES] Detail loaded: {detail.title}, {detail.segment_count} segments")
+        
+        return render_document_detail(detail, urls)
     
     routes["document_detail"] = document_detail
     

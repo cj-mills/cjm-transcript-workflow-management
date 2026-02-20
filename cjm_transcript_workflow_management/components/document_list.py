@@ -119,7 +119,7 @@ def render_document_row(
                 render_icon_button(
                     "eye", "View",
                     size=str(btn_sizes.sm),
-                    hx_get=f"{urls.document_detail}/{doc_id}",
+                    hx_get=f"{urls.document_detail}?doc_id={doc_id}",
                     hx_target=f"#{ManagementHtmlIds.PAGE_CONTENT}",
                     hx_swap="innerHTML",
                 ),

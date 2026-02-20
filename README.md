@@ -12,10 +12,11 @@ pip install cjm_transcript_workflow_management
 ## Project Structure
 
     nbs/
-    ├── components/ (3)
-    │   ├── document_list.ipynb  # Document list table with toolbar and row actions
-    │   ├── helpers.ipynb        # Shared rendering helpers for the management interface
-    │   └── page_renderer.ipynb  # Main management page renderer composing header, toolbar buttons, and document list
+    ├── components/ (4)
+    │   ├── document_detail.ipynb  # Document detail dashboard with info, stats, integrity checks, and samples
+    │   ├── document_list.ipynb    # Document list table with toolbar and row actions
+    │   ├── helpers.ipynb          # Shared rendering helpers for the management interface
+    │   └── page_renderer.ipynb    # Main management page renderer composing header, toolbar buttons, and document list
     ├── routes/ (3)
     │   ├── core.ipynb       # Request helpers for management routes
     │   ├── documents.ipynb  # Document list, detail, and delete routes
@@ -26,12 +27,13 @@ pip install cjm_transcript_workflow_management
     ├── models.ipynb    # Data models for the graph management interface
     └── utils.ipynb     # Formatting utilities for the management interface
 
-Total: 10 notebooks across 3 directories
+Total: 11 notebooks across 3 directories
 
 ## Module Dependencies
 
 ``` mermaid
 graph LR
+    components_document_detail[components.document_detail<br/>document_detail]
     components_document_list[components.document_list<br/>document_list]
     components_helpers[components.helpers<br/>helpers]
     components_page_renderer[components.page_renderer<br/>page_renderer]
@@ -43,29 +45,34 @@ graph LR
     services_management[services.management<br/>services.management]
     utils[utils<br/>utils]
 
-    components_document_list --> components_helpers
+    components_document_detail --> utils
+    components_document_detail --> components_helpers
+    components_document_detail --> models
+    components_document_detail --> html_ids
     components_document_list --> utils
     components_document_list --> models
     components_document_list --> html_ids
-    components_page_renderer --> components_helpers
+    components_document_list --> components_helpers
     components_page_renderer --> models
-    components_page_renderer --> components_document_list
     components_page_renderer --> html_ids
+    components_page_renderer --> components_document_list
+    components_page_renderer --> components_helpers
     routes_core --> services_management
     routes_documents --> services_management
-    routes_documents --> components_helpers
-    routes_documents --> components_document_list
-    routes_documents --> html_ids
     routes_documents --> routes_core
+    routes_documents --> components_document_detail
+    routes_documents --> components_document_list
     routes_documents --> models
+    routes_documents --> components_helpers
+    routes_documents --> html_ids
     routes_init --> services_management
-    routes_init --> routes_documents
     routes_init --> models
-    services_management --> utils
+    routes_init --> routes_documents
     services_management --> models
+    services_management --> utils
 ```
 
-*20 cross-module dependencies detected*
+*25 cross-module dependencies detected*
 
 ## CLI Reference
 
@@ -91,6 +98,133 @@ from cjm_transcript_workflow_management.routes.core import (
 
 ``` python
 DEBUG_MANAGEMENT_ROUTES = False
+```
+
+### document_detail (`document_detail.ipynb`)
+
+> Document detail dashboard with info, stats, integrity checks, and
+> samples
+
+#### Import
+
+``` python
+from cjm_transcript_workflow_management.components.document_detail import (
+    render_detail_header,
+    render_document_info,
+    render_segment_stats,
+    render_sources_info,
+    render_integrity_checks,
+    render_sample_segments,
+    render_detail_scripts,
+    render_document_detail,
+    render_detail_error
+)
+```
+
+#### Functions
+
+``` python
+def _render_stat_row(
+    label:str,  # Label text
+    value:str,  # Value text
+) -> Any:  # Flexbox row element
+    "Render a label-value row for stat display."
+```
+
+``` python
+def _render_check_row(
+    passed:bool,  # Whether the check passed
+    label:str,  # Check description
+    detail:str="",  # Optional detail text (e.g., counts)
+) -> Any:  # Flexbox row with icon
+    "Render a pass/fail check row with icon."
+```
+
+``` python
+def render_detail_header(
+    detail:DocumentDetail,  # Document detail data
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Header element with navigation and actions
+    "Render the detail view header with Back, Export, and Delete buttons."
+```
+
+``` python
+def render_document_info(
+    detail:DocumentDetail,  # Document detail data
+) -> Any:  # Card element with document info
+    "Render the document info card."
+```
+
+``` python
+def render_segment_stats(
+    detail:DocumentDetail,  # Document detail data
+) -> Any:  # Card element with segment stats
+    "Render the segment statistics card."
+```
+
+``` python
+def render_sources_info(
+    detail:DocumentDetail,  # Document detail data
+) -> Any:  # Card element with source plugin info
+    "Render the source traceability card."
+```
+
+``` python
+def render_integrity_checks(
+    detail:DocumentDetail,  # Document detail data
+) -> Any:  # Card element with integrity check rows
+    "Render the integrity checks card with pass/fail indicators."
+```
+
+``` python
+def _render_sample_row(
+    sample:SegmentSample,  # Segment sample data
+) -> Any:  # Flexbox row with index, text, and timing
+    "Render a single sample segment row."
+```
+
+``` python
+def _render_sample_list(
+    samples:List[SegmentSample],  # List of segment samples
+    label:str,  # Section label (e.g., "First", "Last")
+) -> Any:  # Flexbox column with label and rows
+    "Render a labeled list of sample segments."
+```
+
+``` python
+def render_sample_segments(
+    detail:DocumentDetail,  # Document detail data
+) -> Any:  # Card element with sample segment lists
+    "Render the sample segments card with first and last segments."
+```
+
+``` python
+def render_detail_scripts(
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Script element
+    "Render client-side JavaScript for delete from detail view."
+```
+
+``` python
+def render_document_detail(
+    detail:DocumentDetail,  # Document detail data
+    urls:ManagementUrls,  # URL bundle for route endpoints
+) -> Any:  # Complete detail dashboard
+    "Render the complete document detail dashboard."
+```
+
+``` python
+def render_detail_error(
+    message:str="Document not found.",  # Error message
+    urls:ManagementUrls=None,  # URL bundle for Back to List
+) -> Any:  # Error state element
+    "Render an error state for the detail view."
+```
+
+#### Variables
+
+``` python
+_CARD_CLS
 ```
 
 ### document_list (`document_list.ipynb`)
