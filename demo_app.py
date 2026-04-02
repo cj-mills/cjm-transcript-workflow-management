@@ -28,7 +28,6 @@ from cjm_fasthtml_app_core.core.htmx import handle_htmx_request
 # Library imports
 from cjm_transcript_workflow_management.services.management import ManagementService
 from cjm_transcript_workflow_management.routes.init import init_management_routers
-from cjm_transcript_workflow_management.components.page_renderer import render_management_page
 
 
 # =============================================================================
@@ -107,20 +106,20 @@ def main():
     print(f"\n[Management Service]")
     print(f"  Available: {service.is_available()}")
 
-    mgmt_routers, urls, mgmt_routes = init_management_routers(
+    mgmt_result = init_management_routers(
         service=service,
         prefix="/manage",
     )
 
     print(f"\n[Management URLs]")
-    print(f"  management_page: {urls.management_page}")
-    print(f"  list_documents: {urls.list_documents}")
-    print(f"  document_detail: {urls.document_detail}")
-    print(f"  delete_document: {urls.delete_document}")
-    print(f"  delete_selected: {urls.delete_selected}")
-    print(f"  export_document: {urls.export_document}")
-    print(f"  export_all: {urls.export_all}")
-    print(f"  import_graph: {urls.import_graph}")
+    print(f"  management_page: {mgmt_result.urls.management_page}")
+    print(f"  list_documents: {mgmt_result.urls.list_documents}")
+    print(f"  document_detail: {mgmt_result.urls.document_detail}")
+    print(f"  delete_document: {mgmt_result.urls.delete_document}")
+    print(f"  delete_selected: {mgmt_result.urls.delete_selected}")
+    print(f"  export_document: {mgmt_result.urls.export_document}")
+    print(f"  export_all: {mgmt_result.urls.export_all}")
+    print(f"  import_graph: {mgmt_result.urls.import_graph}")
 
     # -------------------------------------------------------------------------
     # Page routes
@@ -128,17 +127,17 @@ def main():
     @router
     async def index(request):
         """Demo homepage — loads document list on page load."""
-        documents = await service.list_documents_async()
+        await mgmt_result.refresh_items()
         return handle_htmx_request(
             request,
-            lambda: render_management_page(documents, urls)
+            mgmt_result.render_page
         )
 
     # -------------------------------------------------------------------------
     # Register routes
     # -------------------------------------------------------------------------
     register_routes(app, router)
-    for mgmt_router in mgmt_routers:
+    for mgmt_router in mgmt_result.routers:
         register_routes(app, mgmt_router)
 
     # Debug output

@@ -6,12 +6,30 @@
 __all__ = ['init_management_routers']
 
 # %% ../../nbs/routes/init.ipynb #d83e89a2
-from typing import List, Dict, Callable, Tuple
+from typing import Callable, Dict, List, Tuple
 
 from fasthtml.common import APIRouter
 
-from ..models import ManagementUrls
+from cjm_fasthtml_virtual_collection.core.models import (
+    VirtualCollectionConfig, VirtualCollectionState,
+)
+from cjm_fasthtml_virtual_collection.core.html_ids import VirtualCollectionHtmlIds
+from cjm_fasthtml_virtual_collection.core.button_ids import VirtualCollectionButtonIds
+from cjm_fasthtml_virtual_collection.routes.router import init_virtual_collection_router
+from cjm_fasthtml_virtual_collection.routes.handlers import build_items_changed_response
+from cjm_fasthtml_virtual_collection.js.auto_fit import auto_fit_callback_name
+from cjm_fasthtml_virtual_collection.components.table import (
+    render_cell_oob, render_visible_cells_oob,
+)
+
+from ..models import ManagementUrls, ManagementResult
+from ..html_ids import ManagementHtmlIds
 from ..services.management import ManagementService
+from cjm_transcript_workflow_management.components.document_list import (
+    build_document_columns, create_document_cell_renderer,
+    render_document_list, render_toolbar,
+)
+from ..components.page_renderer import render_management_page
 from .documents import init_document_router
 from .export_ import init_export_router
 from .import_ import init_import_router
@@ -20,36 +38,181 @@ from .import_ import init_import_router
 def init_management_routers(
     service:ManagementService,  # Service for graph queries
     prefix:str,  # Base prefix for management routes (e.g., "/manage")
-) -> Tuple[List[APIRouter], ManagementUrls, Dict[str, Callable]]:  # (routers, urls, routes)
-    """Initialize and return all management routers with URL bundle."""
+) -> ManagementResult:  # Result with routers, urls, and render callables
+    """Initialize all management routers with virtual collection integration."""
     # Create empty URL bundle (populated after routes are defined)
     urls = ManagementUrls(
-        management_page="",
-        list_documents="",
-        document_detail="",
-        delete_document="",
-        delete_selected="",
-        export_document="",
-        export_all="",
-        import_graph="",
+        management_page="", list_documents="",
+        document_detail="", delete_document="",
+        delete_selected="", export_document="",
+        export_all="", import_graph="",
     )
     
-    # Initialize document router
+    # --- Shared mutable state ---
+    _items = []
+    _selected = set()
+    
+    # --- VC configuration ---
+    vc_config = VirtualCollectionConfig(
+        prefix=ManagementHtmlIds.VC_PREFIX,
+        columns=build_document_columns(),
+    )
+    vc_state = VirtualCollectionState(visible_rows=1, cursor_index=-1)
+    vc_ids = VirtualCollectionHtmlIds(prefix=vc_config.prefix)
+    vc_btn_ids = VirtualCollectionButtonIds(prefix=vc_config.prefix)
+    _refit = auto_fit_callback_name(vc_config)
+    
+    # Forward-ref for cell renderer (patched after toggle route is created)
+    _renderer_ref = [create_document_cell_renderer(lambda: _selected, urls)]
+    
+    # --- Core callbacks ---
+    async def _refresh_items():
+        """Reload documents from service, reset VC state and selection."""
+        docs = await service.list_documents_async()
+        _items[:] = docs
+        vc_state.total_items = len(docs)
+        vc_state.window_start = 0
+        vc_state.cursor_index = 0 if docs else -1
+        _selected.clear()
+    
+    async def _refresh_items_oob():
+        """Reload documents and return targeted VC OOB + toolbar OOB."""
+        await _refresh_items()
+        vc_oobs = build_items_changed_response(
+            _items, vc_state, vc_config, vc_ids, _renderer_ref[0],
+            focus_url=vc_urls.focus_row, refit_callback=_refit,
+        )
+        toolbar_oob = render_toolbar(
+            urls, len(_selected), len(_items), select_all_url,
+        )
+        toolbar_oob.attrs['hx-swap-oob'] = 'outerHTML'
+        return (*vc_oobs, toolbar_oob)
+    
+    def _sort_callback(items_list, column_key, ascending):
+        """Sort documents in place by column key."""
+        key_map = {
+            "title": lambda d: (d.title or "").lower(),
+            "segments": lambda d: d.segment_count,
+            "duration": lambda d: d.total_duration or 0,
+            "created": lambda d: d.created_at or 0,
+        }
+        key_fn = key_map.get(column_key)
+        if key_fn:
+            items_list.sort(key=key_fn, reverse=not ascending)
+    
+    def _on_activate(item, row_index, state, request=None):
+        """Toggle checkbox selection on Enter/Space."""
+        doc_id = item.document_id
+        if doc_id in _selected:
+            _selected.discard(doc_id)
+        else:
+            _selected.add(doc_id)
+        # OOB: re-render checkbox cell + toolbar
+        select_col = vc_config.columns[0]
+        cell_oob = render_cell_oob(
+            item, select_col, row_index, vc_state.total_items,
+            vc_ids, _renderer_ref[0],
+            is_cursor=(state.cursor_index == row_index),
+        )
+        toolbar_oob = render_toolbar(
+            urls, len(_selected), len(_items), select_all_url,
+        )
+        toolbar_oob.attrs['hx-swap-oob'] = 'outerHTML'
+        return (cell_oob, toolbar_oob)
+    
+    # --- VC router ---
+    vc_router, vc_urls = init_virtual_collection_router(
+        config=vc_config,
+        state_getter=lambda: vc_state,
+        state_setter=lambda s: None,
+        get_items=lambda: _items,
+        render_cell=lambda item, ctx: _renderer_ref[0](item, ctx),
+        on_activate=_on_activate,
+        sort_callback=_sort_callback,
+        route_prefix=f"{prefix}/documents/vc",
+    )
+    
+    # --- Selection routes ---
+    sel_router = APIRouter(prefix=f"{prefix}/documents")
+    
+    @sel_router.post
+    async def select_all(request):
+        """Toggle all items selected/deselected."""
+        if len(_selected) == len(_items) and len(_items) > 0:
+            _selected.clear()
+        else:
+            _selected.update(doc.document_id for doc in _items)
+        # OOB: visible checkbox cells + toolbar
+        select_col = vc_config.columns[0]
+        all_indices = list(range(len(_items)))
+        cell_oobs = render_visible_cells_oob(
+            select_col, all_indices, _items, vc_state,
+            vc_ids, _renderer_ref[0],
+        )
+        toolbar_oob = render_toolbar(
+            urls, len(_selected), len(_items), select_all_url,
+        )
+        toolbar_oob.attrs['hx-swap-oob'] = 'outerHTML'
+        return (*cell_oobs, toolbar_oob)
+    
+    @sel_router.post
+    async def toggle_select(request, doc_id:str=""):
+        """Toggle selection for a single document (checkbox click)."""
+        if not doc_id:
+            return ()
+        if doc_id in _selected:
+            _selected.discard(doc_id)
+        else:
+            _selected.add(doc_id)
+        # OOB: toolbar update (checkbox visual already toggled by browser)
+        toolbar_oob = render_toolbar(
+            urls, len(_selected), len(_items), select_all_url,
+        )
+        toolbar_oob.attrs['hx-swap-oob'] = 'outerHTML'
+        return toolbar_oob
+    
+    select_all_url = select_all.to()
+    toggle_select_url = toggle_select.to()
+    
+    # Patch cell renderer with toggle URL
+    _renderer_ref[0] = create_document_cell_renderer(
+        lambda: _selected, urls, toggle_select_url,
+    )
+    
+    # --- Render closures (late-bound: vc_urls, select_all_url assigned above) ---
+    def _render_list():
+        return render_document_list(
+            items=_items, selected=_selected,
+            vc_config=vc_config, vc_state=vc_state,
+            vc_ids=vc_ids, vc_btn_ids=vc_btn_ids,
+            vc_urls=vc_urls, mgmt_urls=urls,
+            render_cell=_renderer_ref[0],
+            select_all_url=select_all_url,
+        )
+    
+    def _render_page():
+        return render_management_page(urls, _render_list)
+    
+    # --- Sub-routers ---
     doc_router, doc_routes = init_document_router(
-        service, f"{prefix}/documents", urls
+        service, f"{prefix}/documents", urls,
+        refresh_items=_refresh_items,
+        refresh_items_oob=_refresh_items_oob,
+        render_list=_render_list,
+        render_page=_render_page,
+        get_selected_ids=lambda: list(_selected),
     )
     
-    # Initialize export router
     export_router, export_routes = init_export_router(
-        service, f"{prefix}/export"
+        service, f"{prefix}/export",
     )
     
-    # Initialize import router
     import_router, import_routes = init_import_router(
-        service, f"{prefix}/import", urls
+        service, f"{prefix}/import", urls,
+        refresh_items_oob=_refresh_items_oob,
     )
     
-    # Populate URL bundle using .to() on route functions
+    # --- Populate URL bundle ---
     urls.management_page = doc_routes["management_page"].to()
     urls.list_documents = doc_routes["list_documents"].to()
     urls.document_detail = doc_routes["document_detail"].to()
@@ -59,7 +222,14 @@ def init_management_routers(
     urls.export_all = export_routes["export_all"].to()
     urls.import_graph = import_routes["import_graph"].to()
     
-    routers = [doc_router, export_router, import_router]
+    routers = [doc_router, export_router, import_router, vc_router, sel_router]
     all_routes = {**doc_routes, **export_routes, **import_routes}
     
-    return routers, urls, all_routes
+    return ManagementResult(
+        routers=routers,
+        urls=urls,
+        routes=all_routes,
+        render_page=_render_page,
+        render_list=_render_list,
+        refresh_items=_refresh_items,
+    )

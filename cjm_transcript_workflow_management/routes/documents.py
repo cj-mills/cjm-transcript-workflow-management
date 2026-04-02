@@ -6,18 +6,15 @@
 __all__ = ['init_document_router']
 
 # %% ../../nbs/routes/documents.ipynb #764b2783
-from typing import Dict, Callable, Tuple
+from typing import Callable, Dict, List, Tuple
 
 from fasthtml.common import APIRouter, Div, P
 
 from ..services.management import ManagementService
 from ..models import ManagementUrls
-from ..components.document_list import render_document_list
 from cjm_transcript_workflow_management.components.document_detail import (
     render_document_detail, render_detail_error
 )
-from ..components.page_renderer import render_management_page
-from ..components.helpers import render_alert
 from ..html_ids import ManagementHtmlIds
 from .core import DEBUG_MANAGEMENT_ROUTES
 
@@ -28,6 +25,11 @@ def init_document_router(
     service:ManagementService,  # Service for graph queries
     prefix:str,  # Route prefix (e.g., "/manage/documents")
     urls:ManagementUrls,  # URL bundle (populated after init)
+    refresh_items:Callable,  # async () -> refresh items from service
+    refresh_items_oob:Callable,  # async () -> refresh + targeted VC OOB tuple
+    render_list:Callable,  # () -> rendered document list component
+    render_page:Callable,  # () -> rendered full management page
+    get_selected_ids:Callable,  # () -> List[str] of selected document IDs
 ) -> Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)
     """Initialize document list, detail, and delete routes."""
     router = APIRouter(prefix=prefix)
@@ -38,9 +40,8 @@ def init_document_router(
         """Return the full management page (header + import + list)."""
         if DEBUG_MANAGEMENT_ROUTES:
             print("[ROUTES] management_page called")
-        
-        documents = await service.list_documents_async()
-        return render_management_page(documents, urls)
+        await refresh_items()
+        return render_page()
     
     routes["management_page"] = management_page
     
@@ -49,13 +50,8 @@ def init_document_router(
         """Return rendered document list."""
         if DEBUG_MANAGEMENT_ROUTES:
             print("[ROUTES] list_documents called")
-        
-        documents = await service.list_documents_async()
-        
-        if DEBUG_MANAGEMENT_ROUTES:
-            print(f"[ROUTES] Found {len(documents)} documents")
-        
-        return render_document_list(documents, urls)
+        await refresh_items()
+        return render_list()
     
     routes["list_documents"] = list_documents
     
@@ -71,15 +67,9 @@ def init_document_router(
         detail = await service.get_document_detail_async(doc_id)
         
         if detail is None:
-            if DEBUG_MANAGEMENT_ROUTES:
-                print(f"[ROUTES] Document not found: {doc_id}")
             return render_detail_error(
-                f"Document {doc_id[:12]}... not found.",
-                urls=urls
+                f"Document {doc_id[:12]}... not found.", urls=urls
             )
-        
-        if DEBUG_MANAGEMENT_ROUTES:
-            print(f"[ROUTES] Detail loaded: {detail.title}, {detail.segment_count} segments")
         
         return render_document_detail(detail, urls)
     
@@ -93,38 +83,33 @@ def init_document_router(
         return_page = form_data.get("return_page", "")
         
         if DEBUG_MANAGEMENT_ROUTES:
-            print(f"[ROUTES] delete_document called for {doc_id}, return_page={return_page}")
+            print(f"[ROUTES] delete_document: {doc_id}, return_page={return_page}")
         
         if doc_id:
-            success = await service.delete_document_async(doc_id)
-            if DEBUG_MANAGEMENT_ROUTES:
-                print(f"[ROUTES] Delete result: {success}")
+            await service.delete_document_async(doc_id)
         
-        # Refresh: return full page (from detail view) or just list (from list view)
-        documents = await service.list_documents_async()
+        # From detail view: full page re-render (back to list)
         if return_page:
-            return render_management_page(documents, urls)
-        return render_document_list(documents, urls)
+            await refresh_items()
+            return render_page()
+        
+        # From list view: targeted VC OOB updates
+        return await refresh_items_oob()
     
     routes["delete_document"] = delete_document
     
     @router.post
     async def delete_selected(request):
-        """Delete multiple selected documents and return refreshed list."""
-        form_data = await request.form()
-        doc_ids = form_data.getlist("doc_ids")
+        """Delete selected documents and return targeted VC OOB updates."""
+        doc_ids = get_selected_ids()
         
         if DEBUG_MANAGEMENT_ROUTES:
-            print(f"[ROUTES] delete_selected called for {len(doc_ids)} docs")
+            print(f"[ROUTES] delete_selected: {len(doc_ids)} docs")
         
         if doc_ids:
-            deleted_count = await service.delete_documents_async(doc_ids)
-            if DEBUG_MANAGEMENT_ROUTES:
-                print(f"[ROUTES] Deleted {deleted_count} documents")
+            await service.delete_documents_async(doc_ids)
         
-        # Refresh the document list
-        documents = await service.list_documents_async()
-        return render_document_list(documents, urls)
+        return await refresh_items_oob()
     
     routes["delete_selected"] = delete_selected
     

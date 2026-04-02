@@ -6,7 +6,7 @@
 __all__ = ['render_page_header', 'render_management_page']
 
 # %% ../../nbs/components/page_renderer.ipynb #133ccd6c
-from typing import Any, List
+from typing import Any, Callable, List
 
 from fasthtml.common import Div, H1, A, Span, Button
 
@@ -18,20 +18,20 @@ from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
 # Tailwind utilities
 from cjm_fasthtml_tailwind.utilities.spacing import p, m
-from cjm_fasthtml_tailwind.utilities.sizing import container, max_w
+from cjm_fasthtml_tailwind.utilities.sizing import container, max_w, h
 from cjm_fasthtml_tailwind.utilities.typography import font_size, font_weight
 from cjm_fasthtml_tailwind.utilities.flexbox_and_grid import (
-    flex_display, flex_direction, items, justify, gap
+    flex_display, flex_direction, items, justify, gap, grow
 )
+from cjm_fasthtml_tailwind.utilities.sizing import min_h
 from cjm_fasthtml_tailwind.core.base import combine_classes
 
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
 # Local imports
-from ..models import DocumentSummary, ManagementUrls
+from ..models import ManagementUrls
 from ..html_ids import ManagementHtmlIds
-from .document_list import render_document_list
 from .import_controls import render_import_controls
 from .helpers import DEBUG_MANAGEMENT_RENDER
 
@@ -80,12 +80,12 @@ def render_page_header(
 
 # %% ../../nbs/components/page_renderer.ipynb #82232b95
 def render_management_page(
-    documents:List[DocumentSummary],  # List of document summaries
     urls:ManagementUrls,  # URL bundle for route endpoints
+    render_list_fn:Callable,  # () -> document list component
 ) -> Any:  # Complete management page component
     """Render the complete management page with header, import section, and document list."""
     if DEBUG_MANAGEMENT_RENDER:
-        print(f"[RENDER] management_page: {len(documents)} docs")
+        print(f"[RENDER] management_page")
     
     # Import controls (hidden by default, toggled by Import button)
     import_section = render_import_controls(urls)
@@ -96,11 +96,11 @@ def render_management_page(
     return Div(
         render_page_header(urls),
         import_section,
-        render_document_list(documents, urls),
+        render_list_fn(),
         id=ManagementHtmlIds.PAGE_CONTENT,
         cls=combine_classes(
             container, max_w._5xl, m.x.auto,
             flex_display, flex_direction.col,
-            p(4), gap(4)
+            p(4), gap(4), h.full,
         )
     )

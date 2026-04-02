@@ -7,7 +7,7 @@ __all__ = ['init_import_router']
 
 # %% ../../nbs/routes/import_.ipynb #c1d2e3f4
 import json
-from typing import Dict, Callable, Tuple
+from typing import Callable, Dict, Tuple
 
 from fasthtml.common import APIRouter, UploadFile, Div
 
@@ -15,7 +15,6 @@ from ..services.management import ManagementService
 from ..models import ManagementUrls, ImportResult
 from ..html_ids import ManagementHtmlIds
 from ..components.import_controls import render_import_result
-from ..components.document_list import render_document_list
 from .core import DEBUG_MANAGEMENT_ROUTES
 
 # %% ../../nbs/routes/import_.ipynb #e1f2a3b4
@@ -23,6 +22,7 @@ def init_import_router(
     service:ManagementService,  # Service for graph queries
     prefix:str,  # Route prefix (e.g., "/manage/import")
     urls:ManagementUrls,  # URL bundle (for list refresh)
+    refresh_items_oob:Callable,  # async () -> refresh + targeted VC OOB tuple
 ) -> Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)
     """Initialize import route for file upload with merge strategy."""
     router = APIRouter(prefix=prefix)
@@ -66,20 +66,16 @@ def init_import_router(
             print(f"[ROUTES] Parsed JSON, format={bundle_data.get('format')}, "
                   f"version={bundle_data.get('version')}")
         
-        # Import via service (handles format/version validation)
+        # Import via service
         result = await service.import_graph_async(bundle_data, merge_strategy)
         
         if DEBUG_MANAGEMENT_ROUTES:
             print(f"[ROUTES] Import result: success={result.success}, "
                   f"nodes={result.nodes_created}, edges={result.edges_created}")
         
-        # Return result alert + OOB refresh of document list
-        # Note: must use hyphenated key on .attrs dict (underscore keys are NOT converted)
-        documents = await service.list_documents_async()
-        list_html = render_document_list(documents, urls)
-        list_html.attrs['hx-swap-oob'] = 'true'
-        
-        return render_import_result(result), list_html
+        # Return result alert + targeted VC OOB refresh
+        vc_oobs = await refresh_items_oob()
+        return (render_import_result(result), *vc_oobs)
     
     routes["import_graph"] = import_graph
     

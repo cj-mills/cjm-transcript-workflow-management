@@ -14,7 +14,7 @@ pip install cjm_transcript_workflow_management
     nbs/
     ├── components/ (5)
     │   ├── document_detail.ipynb  # Document detail dashboard with info, stats, integrity checks, and samples
-    │   ├── document_list.ipynb    # Document list table with toolbar and row actions
+    │   ├── document_list.ipynb    # Document list with virtual collection, keyboard navigation, and bulk selection
     │   ├── helpers.ipynb          # Shared rendering helpers for the management interface
     │   ├── import_controls.ipynb  # Import UI with file input, merge strategy selector, and result display
     │   └── page_renderer.ipynb    # Main management page renderer composing header, toolbar buttons, and document list
@@ -52,48 +52,46 @@ graph LR
     utils[utils<br/>utils]
 
     components_document_detail --> html_ids
-    components_document_detail --> models
-    components_document_detail --> utils
     components_document_detail --> components_helpers
-    components_document_list --> html_ids
-    components_document_list --> utils
-    components_document_list --> components_helpers
+    components_document_detail --> utils
+    components_document_detail --> models
     components_document_list --> models
+    components_document_list --> html_ids
+    components_document_list --> components_helpers
+    components_document_list --> utils
+    components_import_controls --> models
     components_import_controls --> html_ids
     components_import_controls --> components_helpers
-    components_import_controls --> models
     components_page_renderer --> html_ids
-    components_page_renderer --> components_document_list
-    components_page_renderer --> models
     components_page_renderer --> components_helpers
+    components_page_renderer --> models
     components_page_renderer --> components_import_controls
     routes_core --> services_management
-    routes_documents --> html_ids
-    routes_documents --> components_helpers
     routes_documents --> services_management
-    routes_documents --> components_page_renderer
-    routes_documents --> routes_core
-    routes_documents --> components_document_list
-    routes_documents --> components_document_detail
     routes_documents --> models
+    routes_documents --> routes_core
+    routes_documents --> html_ids
+    routes_documents --> components_document_detail
     routes_export_ --> services_management
     routes_export_ --> routes_core
-    routes_import_ --> html_ids
     routes_import_ --> services_management
     routes_import_ --> models
+    routes_import_ --> html_ids
     routes_import_ --> routes_core
-    routes_import_ --> components_document_list
     routes_import_ --> components_import_controls
-    routes_init --> routes_documents
-    routes_init --> services_management
-    routes_init --> routes_export_
-    routes_init --> routes_import_
+    routes_init --> html_ids
     routes_init --> models
+    routes_init --> routes_import_
+    routes_init --> components_document_list
+    routes_init --> services_management
+    routes_init --> components_page_renderer
+    routes_init --> routes_export_
+    routes_init --> routes_documents
     services_management --> models
     services_management --> utils
 ```
 
-*40 cross-module dependencies detected*
+*38 cross-module dependencies detected*
 
 ## CLI Reference
 
@@ -250,15 +248,16 @@ _CARD_CLS
 
 ### document_list (`document_list.ipynb`)
 
-> Document list table with toolbar and row actions
+> Document list with virtual collection, keyboard navigation, and bulk
+> selection
 
 #### Import
 
 ``` python
 from cjm_transcript_workflow_management.components.document_list import (
+    build_document_columns,
+    create_document_cell_renderer,
     render_toolbar,
-    render_document_row,
-    render_document_table,
     render_list_scripts,
     render_document_list
 )
@@ -267,42 +266,50 @@ from cjm_transcript_workflow_management.components.document_list import (
 #### Functions
 
 ``` python
+def build_document_columns() -> tuple
+    "Column definitions for the document list virtual collection."
+```
+
+``` python
+def create_document_cell_renderer(
+    get_selected:Callable,  # () -> Set[str] of selected document IDs
+    urls:'ManagementUrls',  # URL bundle for action buttons
+    toggle_select_url:str="",  # URL for checkbox toggle route
+) -> Callable:  # render_cell(item, ctx) -> FT component
+    "Create a cell renderer for the document list virtual collection."
+```
+
+``` python
 def render_toolbar(
     urls:ManagementUrls,  # URL bundle for route endpoints
-    doc_count:int=0,  # Number of documents in the list
+    selected_count:int=0,  # Number of selected documents
+    total_count:int=0,  # Total number of documents
+    select_all_url:str="",  # URL for select-all toggle route
 ) -> Any:  # Toolbar element
     "Render the document list toolbar with Select All and bulk actions."
-```
-
-``` python
-def render_document_row(
-    doc:DocumentSummary,  # Document summary data
-    urls:ManagementUrls,  # URL bundle for route endpoints
-) -> Any:  # Table row element
-    "Render a single document row in the list table."
-```
-
-``` python
-def render_document_table(
-    documents:List[DocumentSummary],  # List of document summaries
-    urls:ManagementUrls,  # URL bundle for route endpoints
-) -> Any:  # Table element wrapped in scrollable container
-    "Render the document list table."
 ```
 
 ``` python
 def render_list_scripts(
     urls:ManagementUrls,  # URL bundle for route endpoints
 ) -> Any:  # Script element
-    "Render client-side JavaScript for checkbox and modal management."
+    "Render client-side JavaScript for delete modal management."
 ```
 
 ``` python
 def render_document_list(
-    documents:List[DocumentSummary],  # List of document summaries
-    urls:ManagementUrls,  # URL bundle for route endpoints
+    items:list,  # Current document list (List[DocumentSummary])
+    selected:set,  # Selected document IDs (Set[str])
+    vc_config:'VirtualCollectionConfig',  # VC configuration
+    vc_state:'VirtualCollectionState',  # VC state
+    vc_ids:'VirtualCollectionHtmlIds',  # VC HTML IDs
+    vc_btn_ids:'VirtualCollectionButtonIds',  # VC button IDs
+    vc_urls:'VirtualCollectionUrls',  # VC route URLs
+    mgmt_urls:'ManagementUrls',  # Management URLs for actions
+    render_cell:Callable,  # Cell renderer callback
+    select_all_url:str="",  # URL for select-all toggle route
 ) -> Any:  # Complete document list component
-    "Render the complete document list with toolbar, table, and modals."
+    "Render the document list with virtual collection, keyboard nav, and modals."
 ```
 
 ### documents (`documents.ipynb`)
@@ -324,6 +331,11 @@ def init_document_router(
     service:ManagementService,  # Service for graph queries
     prefix:str,  # Route prefix (e.g., "/manage/documents")
     urls:ManagementUrls,  # URL bundle (populated after init)
+    refresh_items:Callable,  # async () -> refresh items from service
+    refresh_items_oob:Callable,  # async () -> refresh + targeted VC OOB tuple
+    render_list:Callable,  # () -> rendered document list component
+    render_page:Callable,  # () -> rendered full management page
+    get_selected_ids:Callable,  # () -> List[str] of selected document IDs
 ) -> Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)
     "Initialize document list, detail, and delete routes."
 ```
@@ -488,6 +500,7 @@ def init_import_router(
     service:ManagementService,  # Service for graph queries
     prefix:str,  # Route prefix (e.g., "/manage/import")
     urls:ManagementUrls,  # URL bundle (for list refresh)
+    refresh_items_oob:Callable,  # async () -> refresh + targeted VC OOB tuple
 ) -> Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)
     "Initialize import route for file upload with merge strategy."
 ```
@@ -546,8 +559,8 @@ from cjm_transcript_workflow_management.routes.init import (
 def init_management_routers(
     service:ManagementService,  # Service for graph queries
     prefix:str,  # Base prefix for management routes (e.g., "/manage")
-) -> Tuple[List[APIRouter], ManagementUrls, Dict[str, Callable]]:  # (routers, urls, routes)
-    "Initialize and return all management routers with URL bundle."
+) -> ManagementResult:  # Result with routers, urls, and render callables
+    "Initialize all management routers with virtual collection integration."
 ```
 
 ### services.management (`management.ipynb`)
@@ -736,7 +749,8 @@ from cjm_transcript_workflow_management.models import (
     DocumentDetail,
     ExportBundle,
     ImportResult,
-    ManagementUrls
+    ManagementUrls,
+    ManagementResult
 )
 ```
 
@@ -835,6 +849,19 @@ class ManagementUrls:
     import_graph: str  # POST: file upload import
 ```
 
+``` python
+@dataclass
+class ManagementResult:
+    "Result of management router initialization."
+    
+    routers: List[Any]  # APIRouter instances to register
+    urls: ManagementUrls  # URL bundle for route endpoints
+    routes: Dict[str, Callable]  # Route handler functions
+    render_page: Callable  # () -> full management page component
+    render_list: Callable  # () -> document list component
+    refresh_items: Callable  # async () -> refresh items from service
+```
+
 ### page_renderer (`page_renderer.ipynb`)
 
 > Main management page renderer composing header, toolbar buttons, and
@@ -860,8 +887,8 @@ def render_page_header(
 
 ``` python
 def render_management_page(
-    documents:List[DocumentSummary],  # List of document summaries
     urls:ManagementUrls,  # URL bundle for route endpoints
+    render_list_fn:Callable,  # () -> document list component
 ) -> Any:  # Complete management page component
     "Render the complete management page with header, import section, and document list."
 ```

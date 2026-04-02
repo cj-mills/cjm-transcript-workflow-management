@@ -18,6 +18,9 @@ class ManagementHtmlIds:
         """Convert an ID to a CSS selector format."""
         return f"#{id_str}"
 
+    # Virtual collection prefix (underscores — used in JS callback names)
+    VC_PREFIX = "mgmt_doc"
+
     # Page sections
     PAGE_CONTENT = "mgmt-page-content"
     DOCUMENT_LIST = "mgmt-document-list"
