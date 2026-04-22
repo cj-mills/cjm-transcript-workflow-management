@@ -53,7 +53,7 @@ from cjm_transcript_workflow_management.components.helpers import (
 
 # %% ../../nbs/components/document_detail.ipynb #5d265af0
 # Card styling constants
-_CARD_CLS = combine_classes(card, bg_dui.base_100, shadow.sm)
+_CARD_CLS = combine_classes(card, bg_dui.base_200, shadow.sm, shadow_dui.primary)
 
 def _render_stat_row(
     label:str,  # Label text

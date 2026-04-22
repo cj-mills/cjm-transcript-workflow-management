@@ -51,44 +51,44 @@ graph LR
     services_management[services.management<br/>services.management]
     utils[utils<br/>utils]
 
-    components_document_detail --> html_ids
     components_document_detail --> components_helpers
     components_document_detail --> utils
+    components_document_detail --> html_ids
     components_document_detail --> models
-    components_document_list --> models
-    components_document_list --> html_ids
     components_document_list --> components_helpers
     components_document_list --> utils
-    components_import_controls --> models
-    components_import_controls --> html_ids
+    components_document_list --> html_ids
+    components_document_list --> models
     components_import_controls --> components_helpers
-    components_page_renderer --> html_ids
+    components_import_controls --> html_ids
+    components_import_controls --> models
     components_page_renderer --> components_helpers
-    components_page_renderer --> models
     components_page_renderer --> components_import_controls
+    components_page_renderer --> html_ids
+    components_page_renderer --> models
     routes_core --> services_management
-    routes_documents --> services_management
-    routes_documents --> models
-    routes_documents --> routes_core
     routes_documents --> html_ids
+    routes_documents --> routes_core
+    routes_documents --> services_management
     routes_documents --> components_document_detail
-    routes_export_ --> services_management
+    routes_documents --> models
     routes_export_ --> routes_core
-    routes_import_ --> services_management
-    routes_import_ --> models
+    routes_export_ --> services_management
     routes_import_ --> html_ids
+    routes_import_ --> models
     routes_import_ --> routes_core
     routes_import_ --> components_import_controls
+    routes_import_ --> services_management
     routes_init --> html_ids
-    routes_init --> models
-    routes_init --> routes_import_
-    routes_init --> components_document_list
-    routes_init --> services_management
     routes_init --> components_page_renderer
-    routes_init --> routes_export_
+    routes_init --> routes_import_
     routes_init --> routes_documents
-    services_management --> models
+    routes_init --> services_management
+    routes_init --> models
+    routes_init --> components_document_list
+    routes_init --> routes_export_
     services_management --> utils
+    services_management --> models
 ```
 
 *38 cross-module dependencies detected*

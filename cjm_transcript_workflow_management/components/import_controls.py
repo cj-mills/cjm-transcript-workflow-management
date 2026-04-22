@@ -95,7 +95,7 @@ def render_import_controls(
                 Div(
                     Span(label_text, cls=str(font_weight.medium)),
                     Span(
-                        f" \u2014 {description}",
+                        f" — {description}",
                         cls=combine_classes(font_size.sm, text_dui.base_content.opacity(60)),
                     ),
                 ),
@@ -157,6 +157,6 @@ def render_import_controls(
         cls=combine_classes(
             p(4), border_radius.box,
             border(), border_dui.base_content.opacity(5),
-            bg_dui.base_100,
+            bg_dui.base_200,
         ),
     )
