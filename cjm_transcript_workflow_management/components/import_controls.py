@@ -20,8 +20,7 @@ from cjm_fasthtml_daisyui.components.data_input.fieldset import (
     fieldset, fieldset_legend, label as fieldset_label
 )
 from cjm_fasthtml_daisyui.components.feedback.alert import alert, alert_colors
-from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui, bg_dui, border_dui
-from cjm_fasthtml_daisyui.utilities.border_radius import border_radius
+from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
 # Tailwind utilities
 from cjm_fasthtml_tailwind.utilities.spacing import p, m
@@ -30,11 +29,13 @@ from cjm_fasthtml_tailwind.utilities.typography import font_size, font_weight
 from cjm_fasthtml_tailwind.utilities.flexbox_and_grid import (
     flex_display, flex_direction, items, gap
 )
-from cjm_fasthtml_tailwind.utilities.borders import border
 from cjm_fasthtml_tailwind.core.base import combine_classes
 
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
+
+# Design system recipes (V10 P3 structural_container)
+from cjm_fasthtml_design_system.panels import panels
 
 # Local imports
 from ..models import ManagementUrls, ImportResult
@@ -155,8 +156,6 @@ def render_import_controls(
         Div(id=ManagementHtmlIds.IMPORT_RESULT, cls=str(m.t(4))),
         id=ManagementHtmlIds.IMPORT_SECTION,
         cls=combine_classes(
-            p(4), border_radius.box,
-            border(), border_dui.base_content.opacity(5),
-            bg_dui.base_200,
+            p(4), panels.structural_container,
         ),
     )

@@ -16,10 +16,8 @@ from fasthtml.common import Div, Span, H2, H3, P, A, Button
 from cjm_fasthtml_daisyui.components.actions.button import (
     btn, btn_colors, btn_styles, btn_sizes
 )
-from cjm_fasthtml_daisyui.components.data_display.card import card, card_body
-from cjm_fasthtml_daisyui.utilities.semantic_colors import (
-    bg_dui, text_dui, shadow_dui, border_dui
-)
+from cjm_fasthtml_daisyui.components.data_display.card import card_body
+from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
 # Tailwind utilities
 from cjm_fasthtml_tailwind.utilities.spacing import p, m
@@ -27,7 +25,6 @@ from cjm_fasthtml_tailwind.utilities.sizing import w, min_w
 from cjm_fasthtml_tailwind.utilities.typography import (
     font_size, font_weight, font_family, truncate
 )
-from cjm_fasthtml_tailwind.utilities.effects import shadow
 from cjm_fasthtml_tailwind.utilities.flexbox_and_grid import (
     flex_display, flex_direction, flex_wrap, flex,
     items, justify, gap
@@ -36,6 +33,9 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
+
+# Design system recipes (V10 P1 dashboard_tile)
+from cjm_fasthtml_design_system.panels import panels
 
 # Local imports
 from cjm_transcript_workflow_management.models import (
@@ -52,8 +52,8 @@ from cjm_transcript_workflow_management.components.helpers import (
 )
 
 # %% ../../nbs/components/document_detail.ipynb #5d265af0
-# Card styling constants
-_CARD_CLS = combine_classes(card, bg_dui.base_200, shadow.sm, shadow_dui.primary)
+# Card styling constant — V10 P1 dashboard_tile recipe
+_CARD_CLS = panels.dashboard_tile
 
 def _render_stat_row(
     label:str,  # Label text
