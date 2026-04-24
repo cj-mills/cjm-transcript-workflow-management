@@ -35,6 +35,9 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
+# Design system recipes (V11 icon-size roles)
+from cjm_fasthtml_design_system.icons import icons
+
 # Virtual Collection
 from cjm_fasthtml_virtual_collection.core.models import (
     VirtualCollectionConfig, VirtualCollectionState, ColumnDef, CellRenderContext,
@@ -128,7 +131,7 @@ def create_document_cell_renderer(
                     hx_swap="innerHTML",
                 ),
                 A(
-                    lucide_icon("download", size=4),
+                    lucide_icon("download", size=icons.icon_button),
                     title="Export",
                     cls=combine_classes(btn, btn_styles.ghost, btn_sizes.sm),
                     href=f"{urls.export_document}?doc_id={doc.document_id}",
@@ -175,7 +178,7 @@ def render_toolbar(
         ),
         # Right side: Delete Selected
         Button(
-            lucide_icon("trash-2", size=4),
+            lucide_icon("trash-2", size=icons.text_button),
             f"Delete Selected ({selected_count})" if selected_count else "Delete Selected",
             cls=combine_classes(
                 btn, btn_colors.error, btn_styles.outline, btn_sizes.sm,

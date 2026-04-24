@@ -34,8 +34,9 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
-# Design system recipes (V10 P1 dashboard_tile)
+# Design system recipes (V10 P1 dashboard_tile, V11 icon-size roles)
 from cjm_fasthtml_design_system.panels import panels
+from cjm_fasthtml_design_system.icons import icons
 
 # Local imports
 from cjm_transcript_workflow_management.models import (
@@ -73,9 +74,9 @@ def _render_check_row(
 ) -> Any:  # Flexbox row with icon
     """Render a pass/fail check row with icon."""
     if passed:
-        icon = lucide_icon("circle-check", size=4, cls=str(text_dui.success))
+        icon = lucide_icon("circle-check", size=icons.status_inline, cls=str(text_dui.success))
     else:
-        icon = lucide_icon("triangle-alert", size=4, cls=str(text_dui.warning))
+        icon = lucide_icon("triangle-alert", size=icons.status_inline, cls=str(text_dui.warning))
     
     children = [icon, Span(label, cls=str(font_size.sm))]
     if detail:
@@ -98,7 +99,7 @@ def render_detail_header(
     return Div(
         # Left: Back to List
         Button(
-            lucide_icon("arrow-left", size=4),
+            lucide_icon("arrow-left", size=icons.text_button),
             "Back to List",
             cls=combine_classes(
                 btn, btn_styles.ghost, btn_sizes.sm,
@@ -112,7 +113,7 @@ def render_detail_header(
         Div(
             # Export: plain link for file download
             A(
-                lucide_icon("download", size=4),
+                lucide_icon("download", size=icons.text_button),
                 "Export",
                 cls=combine_classes(
                     btn, btn_styles.outline, btn_sizes.sm,
@@ -122,7 +123,7 @@ def render_detail_header(
                 download=True,
             ),
             Button(
-                lucide_icon("trash-2", size=4),
+                lucide_icon("trash-2", size=icons.text_button),
                 "Delete",
                 cls=combine_classes(
                     btn, btn_colors.error, btn_styles.outline, btn_sizes.sm,
@@ -375,12 +376,12 @@ def render_detail_error(
 ) -> Any:  # Error state element
     """Render an error state for the detail view."""
     children = [
-        lucide_icon("circle-alert", size=12, cls=str(text_dui.error)),
+        lucide_icon("circle-alert", size=icons.empty_state, cls=str(text_dui.error)),
         P(message, cls=combine_classes(font_size.lg, font_weight.medium, m.t(4))),
     ]
     if urls:
         children.append(Button(
-            lucide_icon("arrow-left", size=4),
+            lucide_icon("arrow-left", size=icons.text_button),
             "Back to List",
             cls=combine_classes(
                 btn, btn_styles.outline, btn_sizes.sm,

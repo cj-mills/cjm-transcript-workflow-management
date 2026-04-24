@@ -34,8 +34,9 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
-# Design system recipes (V10 P3 structural_container)
+# Design system recipes (V10 P3 structural_container, V11 icon-size roles)
 from cjm_fasthtml_design_system.panels import panels
+from cjm_fasthtml_design_system.icons import icons
 
 # Local imports
 from ..models import ManagementUrls, ImportResult
@@ -107,7 +108,7 @@ def render_import_controls(
     return Div(
         # Header
         H3(
-            lucide_icon("upload", size=5),
+            lucide_icon("upload", size=icons.section_header),
             "Import Graph",
             cls=combine_classes(
                 font_size.lg, font_weight.semibold,
@@ -138,7 +139,7 @@ def render_import_controls(
             ),
             # Submit
             Button(
-                lucide_icon("upload", size=4),
+                lucide_icon("upload", size=icons.text_button),
                 "Import",
                 cls=combine_classes(
                     btn, btn_colors.primary, btn_sizes.sm,

@@ -29,6 +29,9 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
+# Design system recipes (V11 icon-size roles)
+from cjm_fasthtml_design_system.icons import icons
+
 # Local imports
 from ..models import ManagementUrls
 from ..html_ids import ManagementHtmlIds
@@ -43,7 +46,7 @@ def render_page_header(
     return Div(
         # Title
         H1(
-            lucide_icon("database", size=7),
+            lucide_icon("database", size=icons.page_title),
             "Graph Management",
             cls=combine_classes(
                 font_size._3xl, font_weight.bold,
@@ -54,7 +57,7 @@ def render_page_header(
         Div(
             # Import: toggles import section visibility
             Button(
-                lucide_icon("upload", size=4),
+                lucide_icon("upload", size=icons.text_button),
                 "Import",
                 cls=combine_classes(
                     btn, btn_styles.outline, btn_sizes.sm,
@@ -64,7 +67,7 @@ def render_page_header(
             ),
             # Export All: plain link for file download
             A(
-                lucide_icon("download", size=4),
+                lucide_icon("download", size=icons.text_button),
                 "Export All",
                 cls=combine_classes(
                     btn, btn_styles.outline, btn_sizes.sm,

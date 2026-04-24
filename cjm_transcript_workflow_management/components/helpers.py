@@ -35,6 +35,9 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
+# Design system recipes (V11 icon-size roles)
+from cjm_fasthtml_design_system.icons import icons
+
 # Debug flag
 DEBUG_MANAGEMENT_RENDER = False
 
@@ -45,7 +48,7 @@ def render_section_header(
 ) -> Any:  # Header element with icon and title
     """Render a section header with icon."""
     return H3(
-        lucide_icon(icon_name, size=5),
+        lucide_icon(icon_name, size=icons.section_header),
         title,
         cls=combine_classes(
             font_size.lg, font_weight.semibold,
@@ -66,7 +69,7 @@ def render_icon_button(
     if color: classes.append(color)
     if size: classes.append(size)
     return Button(
-        lucide_icon(icon_name, size=4),
+        lucide_icon(icon_name, size=icons.icon_button),
         title=label,
         cls=combine_classes(*classes),
         **kwargs
@@ -117,7 +120,7 @@ def render_delete_modal(
                     method="dialog"
                 ),
                 Button(
-                    lucide_icon("trash-2", size=4),
+                    lucide_icon("trash-2", size=icons.text_button),
                     "Delete",
                     cls=combine_classes(
                         btn, btn_colors.error,
@@ -141,7 +144,7 @@ def render_empty_state(
     """Render an empty state placeholder."""
     from fasthtml.common import P
     return Div(
-        lucide_icon("inbox", size=12, cls=str(text_dui.base_content.opacity(30))),
+        lucide_icon("inbox", size=icons.empty_state, cls=str(text_dui.base_content.opacity(30))),
         P(message, cls=combine_classes(
             font_size.lg, font_weight.medium, m.t(4)
         )),
