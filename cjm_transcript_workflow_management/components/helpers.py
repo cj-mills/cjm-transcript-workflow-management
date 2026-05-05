@@ -4,12 +4,12 @@
 
 # %% auto #0
 __all__ = ['DEBUG_MANAGEMENT_RENDER', 'render_section_header', 'render_icon_button', 'render_media_type_badge', 'render_alert',
-           'render_delete_modal', 'render_empty_state']
+           'render_empty_state']
 
 # %% ../../nbs/components/helpers.ipynb #06c1e20e
 from typing import Any, Optional
 
-from fasthtml.common import Div, Span, H3, Button, Form
+from fasthtml.common import Div, Span, H3, Button
 
 # DaisyUI components
 # btn / btn_styles / btn_colors / btn_sizes still used by `render_icon_button`
@@ -22,9 +22,6 @@ from cjm_fasthtml_daisyui.components.data_display.badge import (
     badge, badge_colors, badge_styles, badge_sizes
 )
 from cjm_fasthtml_daisyui.components.feedback.alert import alert, alert_colors
-from cjm_fasthtml_daisyui.components.actions.modal import (
-    modal, modal_box, modal_action
-)
 from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
 # Tailwind utilities
@@ -101,44 +98,6 @@ def render_alert(
     kwargs = {"role": "alert", "cls": combine_classes(*classes)}
     if alert_id: kwargs["id"] = alert_id
     return Div(Span(message), **kwargs)
-
-# %% ../../nbs/components/helpers.ipynb #94713225
-def render_delete_modal(
-    modal_id:str,  # HTML ID for the dialog element
-    body_id:str,  # HTML ID for the modal body (for HTMX swaps)
-    title:str="Delete Document?",  # Modal title text
-    confirm_attrs:dict=None,  # Attributes for the confirm button (hx_delete, etc.)
-) -> Any:  # Dialog element
-    """Render a delete confirmation modal using HTML5 dialog."""
-    from fasthtml.common import Dialog, P
-    
-    confirm_attrs = confirm_attrs or {}
-    
-    return Dialog(
-        Div(
-            H3(title, cls=combine_classes(font_size.lg, font_weight.bold)),
-            Div(id=body_id, cls=m.y(4)),
-            Div(
-                Form(
-                    Button("Cancel", cls=buttons.soft_dismissal, formmethod="dialog"),
-                    method="dialog"
-                ),
-                Button(
-                    lucide_icon("trash-2", size=icons.text_button),
-                    "Delete",
-                    cls=combine_classes(
-                        buttons.destructive_confirm,
-                        flex_display, items.center, gap(1)
-                    ),
-                    **confirm_attrs
-                ),
-                cls=combine_classes(modal_action, flex_display, gap(2))
-            ),
-            cls=str(modal_box)
-        ),
-        id=modal_id,
-        cls=str(modal)
-    )
 
 # %% ../../nbs/components/helpers.ipynb #fc639019
 def render_empty_state(

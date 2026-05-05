@@ -42,6 +42,9 @@ from cjm_fasthtml_lucide_icons.factory import lucide_icon
 from cjm_fasthtml_design_system.buttons import buttons
 from cjm_fasthtml_design_system.icons import icons
 
+# App core: V12 confirm-modal recipe
+from cjm_fasthtml_app_core.components.confirm_modal import render_confirm_modal
+
 # Virtual Collection
 from cjm_fasthtml_virtual_collection.core.models import (
     VirtualCollectionConfig, VirtualCollectionState, ColumnDef, CellRenderContext,
@@ -76,7 +79,7 @@ from ..html_ids import ManagementHtmlIds
 from ..utils import format_duration, format_date
 from cjm_transcript_workflow_management.components.helpers import (
     render_icon_button, render_media_type_badge, render_empty_state,
-    render_delete_modal, DEBUG_MANAGEMENT_RENDER
+    DEBUG_MANAGEMENT_RENDER
 )
 
 # %% ../../nbs/components/document_list.ipynb #16eefe65
@@ -302,21 +305,25 @@ def render_document_list(
         ),
         # Alert area for feedback messages
         Div(id=ManagementHtmlIds.ALERT_AREA),
-        # Single delete confirmation modal
-        render_delete_modal(
+        # Single delete confirmation modal (V12 confirm-modal recipe)
+        render_confirm_modal(
             modal_id=ManagementHtmlIds.DELETE_MODAL,
             body_id=ManagementHtmlIds.DELETE_MODAL_BODY,
             title="Delete Document?",
+            confirm_label="Delete",
+            confirm_icon="trash-2",
             confirm_attrs={
                 "data_delete_confirm": "true",
                 "onclick": f"document.getElementById('{ManagementHtmlIds.DELETE_MODAL}').close()",
             },
         ),
-        # Bulk delete confirmation modal (swap=none — response is all OOB)
-        render_delete_modal(
+        # Bulk delete confirmation modal (V12 confirm-modal recipe; swap=none — response is all OOB)
+        render_confirm_modal(
             modal_id=ManagementHtmlIds.BULK_DELETE_MODAL,
             body_id=ManagementHtmlIds.BULK_DELETE_MODAL_BODY,
             title="Delete Selected Documents?",
+            confirm_label="Delete",
+            confirm_icon="trash-2",
             confirm_attrs={
                 "hx_post": mgmt_urls.delete_selected,
                 "hx_swap": "none",

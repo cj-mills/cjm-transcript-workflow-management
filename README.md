@@ -51,42 +51,42 @@ graph LR
     services_management[services.management<br/>services.management]
     utils[utils<br/>utils]
 
-    components_document_detail --> components_helpers
-    components_document_detail --> html_ids
-    components_document_detail --> models
     components_document_detail --> utils
-    components_document_list --> components_helpers
-    components_document_list --> html_ids
+    components_document_detail --> components_helpers
+    components_document_detail --> models
+    components_document_detail --> html_ids
     components_document_list --> utils
+    components_document_list --> components_helpers
     components_document_list --> models
+    components_document_list --> html_ids
+    components_import_controls --> models
     components_import_controls --> html_ids
     components_import_controls --> components_helpers
-    components_import_controls --> models
+    components_page_renderer --> models
+    components_page_renderer --> components_import_controls
     components_page_renderer --> html_ids
     components_page_renderer --> components_helpers
-    components_page_renderer --> components_import_controls
-    components_page_renderer --> models
     routes_core --> services_management
     routes_documents --> services_management
     routes_documents --> components_document_detail
-    routes_documents --> html_ids
     routes_documents --> routes_core
     routes_documents --> models
+    routes_documents --> html_ids
     routes_export_ --> services_management
     routes_export_ --> routes_core
+    routes_import_ --> components_import_controls
     routes_import_ --> services_management
     routes_import_ --> models
-    routes_import_ --> html_ids
     routes_import_ --> routes_core
-    routes_import_ --> components_import_controls
+    routes_import_ --> html_ids
+    routes_init --> routes_export_
+    routes_init --> components_page_renderer
+    routes_init --> routes_import_
+    routes_init --> models
     routes_init --> services_management
     routes_init --> components_document_list
-    routes_init --> models
     routes_init --> html_ids
     routes_init --> routes_documents
-    routes_init --> routes_import_
-    routes_init --> components_page_renderer
-    routes_init --> routes_export_
     services_management --> models
     services_management --> utils
 ```
@@ -391,7 +391,6 @@ from cjm_transcript_workflow_management.components.helpers import (
     render_icon_button,
     render_media_type_badge,
     render_alert,
-    render_delete_modal,
     render_empty_state
 )
 ```
@@ -431,16 +430,6 @@ def render_alert(
     alert_id:str="",  # Optional HTML ID for the alert
 ) -> Any:  # Alert element
     "Render a DaisyUI alert message."
-```
-
-``` python
-def render_delete_modal(
-    modal_id:str,  # HTML ID for the dialog element
-    body_id:str,  # HTML ID for the modal body (for HTMX swaps)
-    title:str="Delete Document?",  # Modal title text
-    confirm_attrs:dict=None,  # Attributes for the confirm button (hx_delete, etc.)
-) -> Any:  # Dialog element
-    "Render a delete confirmation modal using HTML5 dialog."
 ```
 
 ``` python

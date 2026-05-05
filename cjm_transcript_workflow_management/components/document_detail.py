@@ -36,6 +36,9 @@ from cjm_fasthtml_design_system.buttons import buttons
 from cjm_fasthtml_design_system.panels import panels
 from cjm_fasthtml_design_system.icons import icons
 
+# App core: V12 confirm-modal recipe
+from cjm_fasthtml_app_core.components.confirm_modal import render_confirm_modal
+
 # Local imports
 from cjm_transcript_workflow_management.models import (
     DocumentDetail, SegmentSample, ManagementUrls
@@ -46,7 +49,7 @@ from cjm_transcript_workflow_management.utils import (
     format_datetime, truncate_text, format_time_range
 )
 from cjm_transcript_workflow_management.components.helpers import (
-    render_section_header, render_delete_modal,
+    render_section_header,
     DEBUG_MANAGEMENT_RENDER
 )
 
@@ -351,11 +354,13 @@ def render_document_detail(
         render_integrity_checks(detail),
         # Sample segments
         render_sample_segments(detail),
-        # Delete modal
-        render_delete_modal(
+        # Delete modal (V12 confirm-modal recipe)
+        render_confirm_modal(
             modal_id=ManagementHtmlIds.DELETE_MODAL,
             body_id=ManagementHtmlIds.DELETE_MODAL_BODY,
             title="Delete Document?",
+            confirm_label="Delete",
+            confirm_icon="trash-2",
             confirm_attrs={
                 "data_delete_confirm": "true",
                 "onclick": f"document.getElementById('{ManagementHtmlIds.DELETE_MODAL}').close()",
