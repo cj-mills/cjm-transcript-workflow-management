@@ -11,9 +11,6 @@ from typing import Any, Callable, List
 from fasthtml.common import Div, H1, A, Span, Button
 
 # DaisyUI components
-from cjm_fasthtml_daisyui.components.actions.button import (
-    btn, btn_colors, btn_styles, btn_sizes
-)
 from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
 # Tailwind utilities
@@ -29,7 +26,8 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
-# Design system recipes (V11 icon-size roles)
+# Design system recipes (V1 button roles, V11 icon-size roles)
+from cjm_fasthtml_design_system.buttons import buttons
 from cjm_fasthtml_design_system.icons import icons
 
 # Local imports
@@ -60,7 +58,7 @@ def render_page_header(
                 lucide_icon("upload", size=icons.text_button),
                 "Import",
                 cls=combine_classes(
-                    btn, btn_styles.outline, btn_sizes.sm,
+                    buttons.secondary_action,
                     flex_display, items.center, gap(1)
                 ),
                 onclick=f"document.getElementById('{ManagementHtmlIds.IMPORT_SECTION}').classList.toggle('hidden')",
@@ -70,7 +68,7 @@ def render_page_header(
                 lucide_icon("download", size=icons.text_button),
                 "Export All",
                 cls=combine_classes(
-                    btn, btn_styles.outline, btn_sizes.sm,
+                    buttons.secondary_action,
                     flex_display, items.center, gap(1)
                 ),
                 href=urls.export_all,

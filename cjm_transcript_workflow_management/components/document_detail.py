@@ -13,9 +13,6 @@ from typing import Any, List, Optional
 from fasthtml.common import Div, Span, H2, H3, P, A, Button
 
 # DaisyUI components
-from cjm_fasthtml_daisyui.components.actions.button import (
-    btn, btn_colors, btn_styles, btn_sizes
-)
 from cjm_fasthtml_daisyui.components.data_display.card import card_body
 from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
@@ -34,7 +31,8 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
-# Design system recipes (V10 P1 dashboard_tile, V11 icon-size roles)
+# Design system recipes (V1 button roles, V10 P1 dashboard_tile, V11 icon-size roles)
+from cjm_fasthtml_design_system.buttons import buttons
 from cjm_fasthtml_design_system.panels import panels
 from cjm_fasthtml_design_system.icons import icons
 
@@ -102,7 +100,7 @@ def render_detail_header(
             lucide_icon("arrow-left", size=icons.text_button),
             "Back to List",
             cls=combine_classes(
-                btn, btn_styles.ghost, btn_sizes.sm,
+                buttons.soft_dismissal,
                 flex_display, items.center, gap(1)
             ),
             hx_get=urls.management_page,
@@ -116,7 +114,7 @@ def render_detail_header(
                 lucide_icon("download", size=icons.text_button),
                 "Export",
                 cls=combine_classes(
-                    btn, btn_styles.outline, btn_sizes.sm,
+                    buttons.secondary_action,
                     flex_display, items.center, gap(1)
                 ),
                 href=f"{urls.export_document}?doc_id={detail.document_id}",
@@ -126,7 +124,7 @@ def render_detail_header(
                 lucide_icon("trash-2", size=icons.text_button),
                 "Delete",
                 cls=combine_classes(
-                    btn, btn_colors.error, btn_styles.outline, btn_sizes.sm,
+                    buttons.destructive_cancellable,
                     flex_display, items.center, gap(1)
                 ),
                 onclick=(
@@ -384,7 +382,7 @@ def render_detail_error(
             lucide_icon("arrow-left", size=icons.text_button),
             "Back to List",
             cls=combine_classes(
-                btn, btn_styles.outline, btn_sizes.sm,
+                buttons.secondary_action,
                 flex_display, items.center, gap(1), m.t(4)
             ),
             hx_get=urls.management_page,

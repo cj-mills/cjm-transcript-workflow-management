@@ -14,6 +14,9 @@ from fasthtml.common import (
 )
 
 # DaisyUI components
+# btn / btn_styles / btn_colors / btn_sizes still used by render_icon_button
+# (helper, V1 catalog gap) and the inline `<A>` Export anchor in the cell
+# renderer. Other sites in this file use V1 buttons directly.
 from cjm_fasthtml_daisyui.components.actions.button import (
     btn, btn_colors, btn_styles, btn_sizes
 )
@@ -35,7 +38,8 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
-# Design system recipes (V11 icon-size roles)
+# Design system recipes (V1 button roles, V11 icon-size roles)
+from cjm_fasthtml_design_system.buttons import buttons
 from cjm_fasthtml_design_system.icons import icons
 
 # Virtual Collection
@@ -181,7 +185,7 @@ def render_toolbar(
             lucide_icon("trash-2", size=icons.text_button),
             f"Delete Selected ({selected_count})" if selected_count else "Delete Selected",
             cls=combine_classes(
-                btn, btn_colors.error, btn_styles.outline, btn_sizes.sm,
+                buttons.destructive_cancellable,
                 flex_display, items.center, gap(1)
             ),
             id=ManagementHtmlIds.DELETE_SELECTED_BTN,

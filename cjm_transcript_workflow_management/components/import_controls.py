@@ -11,9 +11,6 @@ from typing import Any
 from fasthtml.common import Div, Span, H3, Form, Input, Button, P, Label
 
 # DaisyUI components
-from cjm_fasthtml_daisyui.components.actions.button import (
-    btn, btn_colors, btn_sizes
-)
 from cjm_fasthtml_daisyui.components.data_input.file_input import file_input
 from cjm_fasthtml_daisyui.components.data_input.radio import radio
 from cjm_fasthtml_daisyui.components.data_input.fieldset import (
@@ -34,7 +31,8 @@ from cjm_fasthtml_tailwind.core.base import combine_classes
 # Icons
 from cjm_fasthtml_lucide_icons.factory import lucide_icon
 
-# Design system recipes (V10 P3 structural_container, V11 icon-size roles)
+# Design system recipes (V1 button roles, V10 P3 structural_container, V11 icon-size roles)
+from cjm_fasthtml_design_system.buttons import buttons
 from cjm_fasthtml_design_system.panels import panels
 from cjm_fasthtml_design_system.icons import icons
 
@@ -142,7 +140,7 @@ def render_import_controls(
                 lucide_icon("upload", size=icons.text_button),
                 "Import",
                 cls=combine_classes(
-                    btn, btn_colors.primary, btn_sizes.sm,
+                    buttons.primary_action,
                     flex_display, items.center, gap(1),
                     m.t(4),
                 ),
