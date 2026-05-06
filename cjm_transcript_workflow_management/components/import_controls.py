@@ -19,6 +19,8 @@ from cjm_fasthtml_daisyui.components.data_input.fieldset import (
 from cjm_fasthtml_daisyui.components.feedback.alert import alert, alert_colors
 from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
+from cjm_fasthtml_design_system.text_tiers import text_tiers
+
 # Tailwind utilities
 from cjm_fasthtml_tailwind.utilities.spacing import p, m
 from cjm_fasthtml_tailwind.utilities.sizing import w
@@ -96,7 +98,7 @@ def render_import_controls(
                     Span(label_text, cls=str(font_weight.medium)),
                     Span(
                         f" — {description}",
-                        cls=combine_classes(font_size.sm, text_dui.base_content.opacity(60)),
+                        cls=combine_classes(font_size.sm, text_tiers.tertiary),
                     ),
                 ),
                 cls=combine_classes(flex_display, items.center, gap(2)),

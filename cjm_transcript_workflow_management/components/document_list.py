@@ -25,6 +25,8 @@ from cjm_fasthtml_daisyui.components.data_input.checkbox import (
 )
 from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
+from cjm_fasthtml_design_system.text_tiers import text_tiers
+
 # Tailwind utilities
 from cjm_fasthtml_tailwind.utilities.spacing import p, m
 from cjm_fasthtml_tailwind.utilities.sizing import w, min_h
@@ -209,7 +211,7 @@ def render_list_scripts(
         var body = document.getElementById('{ManagementHtmlIds.DELETE_MODAL_BODY}');
         if (body) {{
             body.innerHTML = '<p>Permanently delete "' + title + '" and all ' + segCount + ' segments?</p>'
-                + '<p class="{combine_classes(font_size.sm, text_dui.base_content.opacity(60), m.t(2))}">This action cannot be undone.</p>';
+                + '<p class="{combine_classes(font_size.sm, text_tiers.tertiary, m.t(2))}">This action cannot be undone.</p>';
         }}
         var confirmBtn = document.querySelector('#{ManagementHtmlIds.DELETE_MODAL} [data-delete-confirm]');
         if (confirmBtn) {{
@@ -224,7 +226,7 @@ def render_list_scripts(
         var body = document.getElementById('{ManagementHtmlIds.BULK_DELETE_MODAL_BODY}');
         if (body) {{
             body.innerHTML = '<p>Permanently delete selected documents and all their segments?</p>'
-                + '<p class="{combine_classes(font_size.sm, text_dui.base_content.opacity(60), m.t(2))}">This action cannot be undone.</p>';
+                + '<p class="{combine_classes(font_size.sm, text_tiers.tertiary, m.t(2))}">This action cannot be undone.</p>';
         }}
     }}
     """)

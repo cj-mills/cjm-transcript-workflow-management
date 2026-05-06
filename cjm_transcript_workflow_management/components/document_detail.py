@@ -16,6 +16,8 @@ from fasthtml.common import Div, Span, H2, H3, P, A, Button
 from cjm_fasthtml_daisyui.components.data_display.card import card_body
 from cjm_fasthtml_daisyui.utilities.semantic_colors import text_dui
 
+from cjm_fasthtml_design_system.text_tiers import text_tiers
+
 # Tailwind utilities
 from cjm_fasthtml_tailwind.utilities.spacing import p, m
 from cjm_fasthtml_tailwind.utilities.sizing import w, min_w
@@ -63,7 +65,7 @@ def _render_stat_row(
 ) -> Any:  # Flexbox row element
     """Render a label-value row for stat display."""
     return Div(
-        Span(label, cls=str(text_dui.base_content.opacity(70))),
+        Span(label, cls=text_tiers.secondary),
         Span(value, cls=str(font_weight.medium)),
         cls=combine_classes(flex_display, justify.between)
     )
@@ -83,7 +85,7 @@ def _render_check_row(
     if detail:
         children.append(Span(
             detail,
-            cls=combine_classes(font_size.sm, text_dui.base_content.opacity(60))
+            cls=combine_classes(font_size.sm, text_tiers.tertiary)
         ))
     
     return Div(
@@ -260,7 +262,7 @@ def _render_sample_row(
             f"({format_time_range(sample.start_time, sample.end_time)})",
             cls=combine_classes(
                 font_family.mono, font_size.xs,
-                text_dui.base_content.opacity(60)
+                text_tiers.tertiary
             )
         ),
         cls=combine_classes(flex_display, items.center, gap(2), p.y(1)),
@@ -274,7 +276,7 @@ def _render_sample_list(
     if not samples:
         return Div(
             Span(f"{label}:", cls=combine_classes(font_weight.medium, font_size.sm)),
-            P("No samples", cls=str(text_dui.base_content.opacity(50))),
+            P("No samples", cls=text_tiers.muted),
         )
     
     return Div(
@@ -313,7 +315,7 @@ def render_detail_scripts(
         var body = document.getElementById('{ManagementHtmlIds.DELETE_MODAL_BODY}');
         if (body) {{
             body.innerHTML = '<p>Permanently delete "' + title + '" and all ' + segCount + ' segments?</p>'
-                + '<p class="{combine_classes(font_size.sm, text_dui.base_content.opacity(60), m.t(2))}">This action cannot be undone.</p>';
+                + '<p class="{combine_classes(font_size.sm, text_tiers.tertiary, m.t(2))}">This action cannot be undone.</p>';
         }}
         var confirmBtn = document.querySelector('#{ManagementHtmlIds.DELETE_MODAL} [data-delete-confirm]');
         if (confirmBtn) {{
