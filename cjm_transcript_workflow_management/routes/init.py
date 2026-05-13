@@ -8,7 +8,7 @@ __all__ = ['init_management_routers']
 # %% ../../nbs/routes/init.ipynb #d83e89a2
 from typing import Callable, Dict, List, Tuple
 
-from fasthtml.common import APIRouter
+from cjm_fasthtml_app_core.core.routing import APIRouter
 
 from cjm_fasthtml_virtual_collection.core.models import (
     VirtualCollectionConfig, VirtualCollectionState,

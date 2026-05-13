@@ -12,7 +12,8 @@ from typing import Dict, Callable, Tuple
 from dataclasses import asdict
 from datetime import datetime, timezone
 
-from fasthtml.common import APIRouter, Response
+from fasthtml.common import Response
+from cjm_fasthtml_app_core.core.routing import APIRouter
 
 from ..services.management import ManagementService
 from .core import DEBUG_MANAGEMENT_ROUTES

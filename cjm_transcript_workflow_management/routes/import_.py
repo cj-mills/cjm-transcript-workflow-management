@@ -9,7 +9,8 @@ __all__ = ['init_import_router']
 import json
 from typing import Callable, Dict, Tuple
 
-from fasthtml.common import APIRouter, UploadFile, Div
+from fasthtml.common import UploadFile, Div
+from cjm_fasthtml_app_core.core.routing import APIRouter
 
 from ..services.management import ManagementService
 from ..models import ManagementUrls, ImportResult

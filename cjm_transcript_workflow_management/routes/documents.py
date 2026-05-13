@@ -8,7 +8,8 @@ __all__ = ['init_document_router']
 # %% ../../nbs/routes/documents.ipynb #764b2783
 from typing import Callable, Dict, List, Tuple
 
-from fasthtml.common import APIRouter, Div, P
+from fasthtml.common import Div, P
+from cjm_fasthtml_app_core.core.routing import APIRouter
 
 from ..services.management import ManagementService
 from ..models import ManagementUrls
