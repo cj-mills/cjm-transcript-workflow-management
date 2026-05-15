@@ -10,8 +10,9 @@ from pathlib import Path
 
 from fasthtml.common import (
     fast_app, Div, H1, P, Span,
-    APIRouter,
 )
+
+from cjm_fasthtml_app_core.core.routing import APIRouter
 
 # Plugin system
 from cjm_plugin_system.core.manager import PluginManager

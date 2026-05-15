@@ -44,8 +44,9 @@ from cjm_fasthtml_lucide_icons.factory import lucide_icon
 from cjm_fasthtml_design_system.buttons import buttons
 from cjm_fasthtml_design_system.icons import icons
 
-# App core: V12 confirm-modal recipe
+# App core: V12 confirm-modal recipe + V8 empty-state recipe
 from cjm_fasthtml_app_core.components.confirm_modal import render_confirm_modal
+from cjm_fasthtml_app_core.components.empty_state import render_empty_state
 
 # Virtual Collection
 from cjm_fasthtml_virtual_collection.core.models import (
@@ -80,7 +81,7 @@ from ..models import DocumentSummary, ManagementUrls
 from ..html_ids import ManagementHtmlIds
 from ..utils import format_duration, format_date
 from cjm_transcript_workflow_management.components.helpers import (
-    render_icon_button, render_media_type_badge, render_empty_state,
+    render_icon_button, render_media_type_badge,
     DEBUG_MANAGEMENT_RENDER
 )
 
@@ -251,7 +252,11 @@ def render_document_list(
     # Empty state
     if not items:
         return Div(
-            render_empty_state(),
+            render_empty_state(
+                message="No documents found.",
+                detail="Complete a workflow to create a document, or import one.",
+                icon_name="inbox",
+            ),
             id=ManagementHtmlIds.DOCUMENT_LIST,
         )
     
@@ -298,7 +303,11 @@ def render_document_list(
                 ids=vc_ids,
                 urls=vc_urls,
                 render_cell=render_cell,
-                render_empty=render_empty_state,
+                render_empty=lambda: render_empty_state(
+                    message="No documents found.",
+                    detail="Complete a workflow to create a document, or import one.",
+                    icon_name="inbox",
+                ),
             ),
             cls=combine_classes(
                 flex_display, flex_direction.col, grow(1), min_h(0),

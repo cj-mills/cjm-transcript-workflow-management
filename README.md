@@ -51,44 +51,44 @@ graph LR
     services_management[services.management<br/>services.management]
     utils[utils<br/>utils]
 
-    components_document_detail --> utils
-    components_document_detail --> components_helpers
-    components_document_detail --> models
     components_document_detail --> html_ids
-    components_document_list --> utils
-    components_document_list --> components_helpers
-    components_document_list --> models
+    components_document_detail --> utils
+    components_document_detail --> models
+    components_document_detail --> components_helpers
     components_document_list --> html_ids
-    components_import_controls --> models
+    components_document_list --> models
+    components_document_list --> components_helpers
+    components_document_list --> utils
     components_import_controls --> html_ids
+    components_import_controls --> models
     components_import_controls --> components_helpers
-    components_page_renderer --> models
-    components_page_renderer --> components_import_controls
     components_page_renderer --> html_ids
+    components_page_renderer --> models
     components_page_renderer --> components_helpers
+    components_page_renderer --> components_import_controls
     routes_core --> services_management
-    routes_documents --> services_management
     routes_documents --> components_document_detail
+    routes_documents --> services_management
+    routes_documents --> html_ids
     routes_documents --> routes_core
     routes_documents --> models
-    routes_documents --> html_ids
     routes_export_ --> services_management
     routes_export_ --> routes_core
     routes_import_ --> components_import_controls
     routes_import_ --> services_management
-    routes_import_ --> models
-    routes_import_ --> routes_core
     routes_import_ --> html_ids
-    routes_init --> routes_export_
-    routes_init --> components_page_renderer
+    routes_import_ --> routes_core
+    routes_import_ --> models
+    routes_init --> html_ids
     routes_init --> routes_import_
+    routes_init --> components_document_list
+    routes_init --> routes_documents
     routes_init --> models
     routes_init --> services_management
-    routes_init --> components_document_list
-    routes_init --> html_ids
-    routes_init --> routes_documents
-    services_management --> models
+    routes_init --> routes_export_
+    routes_init --> components_page_renderer
     services_management --> utils
+    services_management --> models
 ```
 
 *38 cross-module dependencies detected*
@@ -390,8 +390,7 @@ from cjm_transcript_workflow_management.components.helpers import (
     render_section_header,
     render_icon_button,
     render_media_type_badge,
-    render_alert,
-    render_empty_state
+    render_alert
 )
 ```
 
@@ -430,14 +429,6 @@ def render_alert(
     alert_id:str="",  # Optional HTML ID for the alert
 ) -> Any:  # Alert element
     "Render a DaisyUI alert message."
-```
-
-``` python
-def render_empty_state(
-    message:str="No documents found.",  # Primary message
-    detail:str="Complete a workflow to create a document, or import one.",  # Secondary detail
-) -> Any:  # Empty state element
-    "Render an empty state placeholder."
 ```
 
 #### Variables
