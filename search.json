@@ -1,0 +1,621 @@
+[
+  {
+    "objectID": "models.html",
+    "href": "models.html",
+    "title": "Models",
+    "section": "",
+    "text": "A lightweight snapshot of a single segment for display in detail views.\n\n\n\n\ndef SegmentSample(\n    index:int, text:str, start_time:float, end_time:float\n)-&gt;None:\n\nLightweight segment snapshot for detail view display.\n\ns = SegmentSample(index=0, text=\"Sun Tzu said,\", start_time=0.0, end_time=2.1)\nassert s.index == 0\nassert s.end_time - s.start_time == 2.1\nprint(f\"[{s.index}] \\\"{s.text}\\\" ({s.start_time}s - {s.end_time}s)\")\n\n[0] \"Sun Tzu said,\" (0.0s - 2.1s)",
+    "crumbs": [
+      "Models"
+    ]
+  },
+  {
+    "objectID": "models.html#segmentsample",
+    "href": "models.html#segmentsample",
+    "title": "Models",
+    "section": "",
+    "text": "A lightweight snapshot of a single segment for display in detail views.\n\n\n\n\ndef SegmentSample(\n    index:int, text:str, start_time:float, end_time:float\n)-&gt;None:\n\nLightweight segment snapshot for detail view display.\n\ns = SegmentSample(index=0, text=\"Sun Tzu said,\", start_time=0.0, end_time=2.1)\nassert s.index == 0\nassert s.end_time - s.start_time == 2.1\nprint(f\"[{s.index}] \\\"{s.text}\\\" ({s.start_time}s - {s.end_time}s)\")\n\n[0] \"Sun Tzu said,\" (0.0s - 2.1s)",
+    "crumbs": [
+      "Models"
+    ]
+  },
+  {
+    "objectID": "models.html#documentsummary",
+    "href": "models.html#documentsummary",
+    "title": "Models",
+    "section": "DocumentSummary",
+    "text": "DocumentSummary\nSummary row for the document list table. One per document.\n\n\nDocumentSummary\n\ndef DocumentSummary(\n    document_id:str, title:str, media_type:str, segment_count:int, total_duration:float, created_at:float\n)-&gt;None:\n\nSummary of a single document for list display.\n\ndoc = DocumentSummary(\n    document_id=\"abc-123\", title=\"1. Laying Plans\",\n    media_type=\"audio\", segment_count=247,\n    total_duration=2537.0, created_at=1740000000.0\n)\nassert doc.segment_count == 247\nprint(f\"{doc.title}: {doc.segment_count} segments, {doc.total_duration:.0f}s\")\n\n1. Laying Plans: 247 segments, 2537s",
+    "crumbs": [
+      "Models"
+    ]
+  },
+  {
+    "objectID": "models.html#documentdetail",
+    "href": "models.html#documentdetail",
+    "title": "Models",
+    "section": "DocumentDetail",
+    "text": "DocumentDetail\nFull document information for the detail view, including integrity checks and sample segments.\n\n\nDocumentDetail\n\ndef DocumentDetail(\n    document_id:str, title:str, media_type:str, created_at:float, updated_at:float, segment_count:int,\n    total_duration:float, avg_segment_duration:float, has_starts_with:bool, next_chain_complete:bool, next_count:int,\n    part_of_complete:bool, part_of_count:int, all_have_timing:bool, segments_missing_timing:int,\n    all_have_sources:bool, segments_missing_sources:int, all_checks_passed:bool, source_plugins:List=&lt;factory&gt;,\n    first_segments:List=&lt;factory&gt;, last_segments:List=&lt;factory&gt;\n)-&gt;None:\n\nFull document information for the detail dashboard.\n\ndetail = DocumentDetail(\n    document_id=\"abc-123\", title=\"1. Laying Plans\",\n    media_type=\"audio\", created_at=1740000000.0, updated_at=1740000000.0,\n    segment_count=247, total_duration=2537.0, avg_segment_duration=10.3,\n    has_starts_with=True, next_chain_complete=True, next_count=246,\n    part_of_complete=True, part_of_count=247,\n    all_have_timing=True, segments_missing_timing=0,\n    all_have_sources=True, segments_missing_sources=0,\n    all_checks_passed=True,\n    source_plugins=[\"cjm-transcription-plugin-whisper\"],\n    first_segments=[SegmentSample(0, \"Sun Tzu said,\", 0.0, 2.1)],\n    last_segments=[SegmentSample(246, \"Hence under these five...\", 2528.0, 2537.0)],\n)\nassert detail.all_checks_passed\nassert detail.next_count == detail.segment_count - 1\nprint(f\"{detail.title}: {detail.segment_count} segments, all checks passed: {detail.all_checks_passed}\")\n\n1. Laying Plans: 247 segments, all checks passed: True",
+    "crumbs": [
+      "Models"
+    ]
+  },
+  {
+    "objectID": "models.html#exportbundle",
+    "href": "models.html#exportbundle",
+    "title": "Models",
+    "section": "ExportBundle",
+    "text": "ExportBundle\nMetadata wrapper for exported graph data. The graph field contains the raw {\"nodes\": [...], \"edges\": [...]} structure.\n\n\nExportBundle\n\ndef ExportBundle(\n    format:str, version:str, exported_at:str, source_plugin:str, document_count:int, graph:Dict\n)-&gt;None:\n\nMetadata wrapper for exported graph data.\n\nbundle = ExportBundle(\n    format=\"cjm-context-graph\", version=\"1.0.0\",\n    exported_at=\"2026-02-19T12:00:00Z\",\n    source_plugin=\"cjm-graph-plugin-sqlite\",\n    document_count=1,\n    graph={\"nodes\": [], \"edges\": []}\n)\nassert bundle.format == \"cjm-context-graph\"\nprint(f\"Export: {bundle.format} v{bundle.version}, {bundle.document_count} doc(s)\")\n\nExport: cjm-context-graph v1.0.0, 1 doc(s)",
+    "crumbs": [
+      "Models"
+    ]
+  },
+  {
+    "objectID": "models.html#importresult",
+    "href": "models.html#importresult",
+    "title": "Models",
+    "section": "ImportResult",
+    "text": "ImportResult\nResult of a graph import operation.\n\n\nImportResult\n\ndef ImportResult(\n    success:bool, nodes_created:int, edges_created:int, nodes_skipped:int, edges_skipped:int, errors:List=&lt;factory&gt;\n)-&gt;None:\n\nResult of a graph import operation.\n\nresult = ImportResult(\n    success=True, nodes_created=248, edges_created=494,\n    nodes_skipped=0, edges_skipped=0\n)\nassert result.success\nassert len(result.errors) == 0\nprint(f\"Import: {result.nodes_created} nodes, {result.edges_created} edges\")\n\nImport: 248 nodes, 494 edges",
+    "crumbs": [
+      "Models"
+    ]
+  },
+  {
+    "objectID": "models.html#managementurls",
+    "href": "models.html#managementurls",
+    "title": "Models",
+    "section": "ManagementUrls",
+    "text": "ManagementUrls\nURL bundle for all management routes. Constructed during router assembly and passed to components for link generation.\n\n\nManagementUrls\n\ndef ManagementUrls(\n    management_page:str, list_documents:str, document_detail:str, delete_document:str, delete_selected:str,\n    export_document:str, export_all:str, import_graph:str\n)-&gt;None:\n\nURL bundle for management route endpoints.\n\nurls = ManagementUrls(\n    management_page=\"/manage/documents/management_page\",\n    list_documents=\"/manage/documents/list_documents\",\n    document_detail=\"/manage/documents/document_detail\",\n    delete_document=\"/manage/documents/delete_document\",\n    delete_selected=\"/manage/documents/delete_selected\",\n    export_document=\"/manage/export/export_document\",\n    export_all=\"/manage/export/export_all\",\n    import_graph=\"/manage/import/import_graph\",\n)\nassert urls.management_page.startswith(\"/manage\")\nprint(f\"Page URL: {urls.management_page}\")\nprint(f\"List URL: {urls.list_documents}\")",
+    "crumbs": [
+      "Models"
+    ]
+  },
+  {
+    "objectID": "models.html#managementresult",
+    "href": "models.html#managementresult",
+    "title": "Models",
+    "section": "ManagementResult",
+    "text": "ManagementResult\nResult dataclass from management router initialization. Replaces the raw tuple return with a typed result for API clarity and extensibility.\n\n\nManagementResult\n\ndef ManagementResult(\n    routers:List, urls:ManagementUrls, routes:Dict, render_page:Callable, render_list:Callable,\n    refresh_items:Callable\n)-&gt;None:\n\nResult of management router initialization.\n\nresult = ManagementResult(\n    routers=[], urls=urls, routes={},\n    render_page=lambda: None, render_list=lambda: None,\n    refresh_items=lambda: None,\n)\nassert result.urls == urls\nassert result.routers == []\nprint(f\"ManagementResult OK: {len(result.routers)} routers\")",
+    "crumbs": [
+      "Models"
+    ]
+  },
+  {
+    "objectID": "routes/export_.html",
+    "href": "routes/export_.html",
+    "title": "export_",
+    "section": "",
+    "text": "assert _sanitize_filename('1. Laying Plans') == '1._Laying_Plans'\nassert _sanitize_filename('test/file:name') == 'testfilename'\nassert _sanitize_filename('  hello  ') == 'hello'\nprint(\"Sanitize OK\")\n\nSanitize OK",
+    "crumbs": [
+      "routes",
+      "export_"
+    ]
+  },
+  {
+    "objectID": "routes/export_.html#helpers",
+    "href": "routes/export_.html#helpers",
+    "title": "export_",
+    "section": "",
+    "text": "assert _sanitize_filename('1. Laying Plans') == '1._Laying_Plans'\nassert _sanitize_filename('test/file:name') == 'testfilename'\nassert _sanitize_filename('  hello  ') == 'hello'\nprint(\"Sanitize OK\")\n\nSanitize OK",
+    "crumbs": [
+      "routes",
+      "export_"
+    ]
+  },
+  {
+    "objectID": "routes/export_.html#router-initialization",
+    "href": "routes/export_.html#router-initialization",
+    "title": "export_",
+    "section": "Router Initialization",
+    "text": "Router Initialization\n\n\ninit_export_router\n\ndef init_export_router(\n    service:ManagementService, # Service for graph queries\n    prefix:str, # Route prefix (e.g., \"/manage/export\")\n)-&gt;Tuple: # (router, routes dict)\n\nInitialize export routes for single document and full database downloads.\n\nassert init_export_router is not None\nprint(\"routes.export_ imports OK\")\n\nroutes.export_ imports OK",
+    "crumbs": [
+      "routes",
+      "export_"
+    ]
+  },
+  {
+    "objectID": "routes/init.html",
+    "href": "routes/init.html",
+    "title": "init",
+    "section": "",
+    "text": "def init_management_routers(\n    service:ManagementService, # Service for graph queries\n    prefix:str, # Base prefix for management routes (e.g., \"/manage\")\n)-&gt;ManagementResult: # Result with routers, urls, and render callables\n\nInitialize all management routers with virtual collection integration.\n\nassert init_management_routers is not None\nprint(\"routes.init imports OK\")\n\nroutes.init imports OK",
+    "crumbs": [
+      "routes",
+      "init"
+    ]
+  },
+  {
+    "objectID": "routes/init.html#router-assembly",
+    "href": "routes/init.html#router-assembly",
+    "title": "init",
+    "section": "",
+    "text": "def init_management_routers(\n    service:ManagementService, # Service for graph queries\n    prefix:str, # Base prefix for management routes (e.g., \"/manage\")\n)-&gt;ManagementResult: # Result with routers, urls, and render callables\n\nInitialize all management routers with virtual collection integration.\n\nassert init_management_routers is not None\nprint(\"routes.init imports OK\")\n\nroutes.init imports OK",
+    "crumbs": [
+      "routes",
+      "init"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "cjm-transcript-workflow-management",
+    "section": "",
+    "text": "pip install cjm_transcript_workflow_management",
+    "crumbs": [
+      "cjm-transcript-workflow-management"
+    ]
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "cjm-transcript-workflow-management",
+    "section": "",
+    "text": "pip install cjm_transcript_workflow_management",
+    "crumbs": [
+      "cjm-transcript-workflow-management"
+    ]
+  },
+  {
+    "objectID": "index.html#project-structure",
+    "href": "index.html#project-structure",
+    "title": "cjm-transcript-workflow-management",
+    "section": "Project Structure",
+    "text": "Project Structure\nnbs/\n├── components/ (5)\n│   ├── document_detail.ipynb  # Document detail dashboard with info, stats, integrity checks, and samples\n│   ├── document_list.ipynb    # Document list with virtual collection, keyboard navigation, and bulk selection\n│   ├── helpers.ipynb          # Shared rendering helpers for the management interface\n│   ├── import_controls.ipynb  # Import UI with file input, merge strategy selector, and result display\n│   └── page_renderer.ipynb    # Main management page renderer composing header, toolbar buttons, and document list\n├── routes/ (5)\n│   ├── core.ipynb       # Request helpers for management routes\n│   ├── documents.ipynb  # Document list, detail, and delete routes\n│   ├── export_.ipynb    # Export routes for single document and full database JSON file downloads\n│   ├── import_.ipynb    # Import route for file upload with JSON validation and merge strategy\n│   └── init.ipynb       # Router assembly for management routes\n├── services/ (1)\n│   └── management.ipynb  # Service layer wrapping graph plugin operations for document management\n├── html_ids.ipynb  # HTML ID constants for the graph management interface\n├── models.ipynb    # Data models for the graph management interface\n└── utils.ipynb     # Formatting utilities for the management interface\nTotal: 14 notebooks across 3 directories",
+    "crumbs": [
+      "cjm-transcript-workflow-management"
+    ]
+  },
+  {
+    "objectID": "index.html#module-dependencies",
+    "href": "index.html#module-dependencies",
+    "title": "cjm-transcript-workflow-management",
+    "section": "Module Dependencies",
+    "text": "Module Dependencies\ngraph LR\n    components_document_detail[components.document_detail&lt;br/&gt;document_detail]\n    components_document_list[components.document_list&lt;br/&gt;document_list]\n    components_helpers[components.helpers&lt;br/&gt;helpers]\n    components_import_controls[components.import_controls&lt;br/&gt;import_controls]\n    components_page_renderer[components.page_renderer&lt;br/&gt;page_renderer]\n    html_ids[html_ids&lt;br/&gt;html_ids]\n    models[models&lt;br/&gt;Models]\n    routes_core[routes.core&lt;br/&gt;core]\n    routes_documents[routes.documents&lt;br/&gt;documents]\n    routes_export_[routes.export_&lt;br/&gt;export_]\n    routes_import_[routes.import_&lt;br/&gt;import_]\n    routes_init[routes.init&lt;br/&gt;init]\n    services_management[services.management&lt;br/&gt;services.management]\n    utils[utils&lt;br/&gt;utils]\n\n    components_document_detail --&gt; html_ids\n    components_document_detail --&gt; utils\n    components_document_detail --&gt; models\n    components_document_detail --&gt; components_helpers\n    components_document_list --&gt; html_ids\n    components_document_list --&gt; models\n    components_document_list --&gt; components_helpers\n    components_document_list --&gt; utils\n    components_import_controls --&gt; html_ids\n    components_import_controls --&gt; models\n    components_import_controls --&gt; components_helpers\n    components_page_renderer --&gt; html_ids\n    components_page_renderer --&gt; models\n    components_page_renderer --&gt; components_helpers\n    components_page_renderer --&gt; components_import_controls\n    routes_core --&gt; services_management\n    routes_documents --&gt; components_document_detail\n    routes_documents --&gt; services_management\n    routes_documents --&gt; html_ids\n    routes_documents --&gt; routes_core\n    routes_documents --&gt; models\n    routes_export_ --&gt; services_management\n    routes_export_ --&gt; routes_core\n    routes_import_ --&gt; components_import_controls\n    routes_import_ --&gt; services_management\n    routes_import_ --&gt; html_ids\n    routes_import_ --&gt; routes_core\n    routes_import_ --&gt; models\n    routes_init --&gt; html_ids\n    routes_init --&gt; routes_import_\n    routes_init --&gt; components_document_list\n    routes_init --&gt; routes_documents\n    routes_init --&gt; models\n    routes_init --&gt; services_management\n    routes_init --&gt; routes_export_\n    routes_init --&gt; components_page_renderer\n    services_management --&gt; utils\n    services_management --&gt; models\n38 cross-module dependencies detected",
+    "crumbs": [
+      "cjm-transcript-workflow-management"
+    ]
+  },
+  {
+    "objectID": "index.html#cli-reference",
+    "href": "index.html#cli-reference",
+    "title": "cjm-transcript-workflow-management",
+    "section": "CLI Reference",
+    "text": "CLI Reference\nNo CLI commands found in this project.",
+    "crumbs": [
+      "cjm-transcript-workflow-management"
+    ]
+  },
+  {
+    "objectID": "index.html#module-overview",
+    "href": "index.html#module-overview",
+    "title": "cjm-transcript-workflow-management",
+    "section": "Module Overview",
+    "text": "Module Overview\nDetailed documentation for each module in the project:\n\ncore (core.ipynb)\n\nRequest helpers for management routes\n\n\nImport\nfrom cjm_transcript_workflow_management.routes.core import (\n    DEBUG_MANAGEMENT_ROUTES\n)\n\n\nVariables\nDEBUG_MANAGEMENT_ROUTES = False\n\n\n\ndocument_detail (document_detail.ipynb)\n\nDocument detail dashboard with info, stats, integrity checks, and samples\n\n\nImport\nfrom cjm_transcript_workflow_management.components.document_detail import (\n    render_detail_header,\n    render_document_info,\n    render_segment_stats,\n    render_sources_info,\n    render_integrity_checks,\n    render_sample_segments,\n    render_detail_scripts,\n    render_document_detail,\n    render_detail_error\n)\n\n\nFunctions\ndef _render_stat_row(\n    label:str,  # Label text\n    value:str,  # Value text\n) -&gt; Any:  # Flexbox row element\n    \"Render a label-value row for stat display.\"\ndef _render_check_row(\n    passed:bool,  # Whether the check passed\n    label:str,  # Check description\n    detail:str=\"\",  # Optional detail text (e.g., counts)\n) -&gt; Any:  # Flexbox row with icon\n    \"Render a pass/fail check row with icon.\"\ndef render_detail_header(\n    detail:DocumentDetail,  # Document detail data\n    urls:ManagementUrls,  # URL bundle for route endpoints\n) -&gt; Any:  # Header element with navigation and actions\n    \"Render the detail view header with Back, Export, and Delete buttons.\"\ndef render_document_info(\n    detail:DocumentDetail,  # Document detail data\n) -&gt; Any:  # Card element with document info\n    \"Render the document info card.\"\ndef render_segment_stats(\n    detail:DocumentDetail,  # Document detail data\n) -&gt; Any:  # Card element with segment stats\n    \"Render the segment statistics card.\"\ndef render_sources_info(\n    detail:DocumentDetail,  # Document detail data\n) -&gt; Any:  # Card element with source plugin info\n    \"Render the source traceability card.\"\ndef render_integrity_checks(\n    detail:DocumentDetail,  # Document detail data\n) -&gt; Any:  # Card element with integrity check rows\n    \"Render the integrity checks card with pass/fail indicators.\"\ndef _render_sample_row(\n    sample:SegmentSample,  # Segment sample data\n) -&gt; Any:  # Flexbox row with index, text, and timing\n    \"Render a single sample segment row.\"\ndef _render_sample_list(\n    samples:List[SegmentSample],  # List of segment samples\n    label:str,  # Section label (e.g., \"First\", \"Last\")\n) -&gt; Any:  # Flexbox column with label and rows\n    \"Render a labeled list of sample segments.\"\ndef render_sample_segments(\n    detail:DocumentDetail,  # Document detail data\n) -&gt; Any:  # Card element with sample segment lists\n    \"Render the sample segments card with first and last segments.\"\ndef render_detail_scripts(\n    urls:ManagementUrls,  # URL bundle for route endpoints\n) -&gt; Any:  # Script element\n    \"Render client-side JavaScript for delete from detail view.\"\ndef render_document_detail(\n    detail:DocumentDetail,  # Document detail data\n    urls:ManagementUrls,  # URL bundle for route endpoints\n) -&gt; Any:  # Complete detail dashboard\n    \"Render the complete document detail dashboard.\"\ndef render_detail_error(\n    message:str=\"Document not found.\",  # Error message\n    urls:ManagementUrls=None,  # URL bundle for Back to List\n) -&gt; Any:  # Error state element\n    \"Render an error state for the detail view.\"\n\n\nVariables\n_CARD_CLS\n\n\n\ndocument_list (document_list.ipynb)\n\nDocument list with virtual collection, keyboard navigation, and bulk selection\n\n\nImport\nfrom cjm_transcript_workflow_management.components.document_list import (\n    build_document_columns,\n    create_document_cell_renderer,\n    render_toolbar,\n    render_list_scripts,\n    render_document_list\n)\n\n\nFunctions\ndef build_document_columns() -&gt; tuple\n    \"Column definitions for the document list virtual collection.\"\ndef create_document_cell_renderer(\n    get_selected:Callable,  # () -&gt; Set[str] of selected document IDs\n    urls:'ManagementUrls',  # URL bundle for action buttons\n    toggle_select_url:str=\"\",  # URL for checkbox toggle route\n) -&gt; Callable:  # render_cell(item, ctx) -&gt; FT component\n    \"Create a cell renderer for the document list virtual collection.\"\ndef render_toolbar(\n    urls:ManagementUrls,  # URL bundle for route endpoints\n    selected_count:int=0,  # Number of selected documents\n    total_count:int=0,  # Total number of documents\n    select_all_url:str=\"\",  # URL for select-all toggle route\n) -&gt; Any:  # Toolbar element\n    \"Render the document list toolbar with Select All and bulk actions.\"\ndef render_list_scripts(\n    urls:ManagementUrls,  # URL bundle for route endpoints\n) -&gt; Any:  # Script element\n    \"Render client-side JavaScript for delete modal management.\"\ndef render_document_list(\n    items:list,  # Current document list (List[DocumentSummary])\n    selected:set,  # Selected document IDs (Set[str])\n    vc_config:'VirtualCollectionConfig',  # VC configuration\n    vc_state:'VirtualCollectionState',  # VC state\n    vc_ids:'VirtualCollectionHtmlIds',  # VC HTML IDs\n    vc_btn_ids:'VirtualCollectionButtonIds',  # VC button IDs\n    vc_urls:'VirtualCollectionUrls',  # VC route URLs\n    mgmt_urls:'ManagementUrls',  # Management URLs for actions\n    render_cell:Callable,  # Cell renderer callback\n    select_all_url:str=\"\",  # URL for select-all toggle route\n) -&gt; Any:  # Complete document list component\n    \"Render the document list with virtual collection, keyboard nav, and modals.\"\n\n\n\ndocuments (documents.ipynb)\n\nDocument list, detail, and delete routes\n\n\nImport\nfrom cjm_transcript_workflow_management.routes.documents import (\n    init_document_router\n)\n\n\nFunctions\ndef init_document_router(\n    service:ManagementService,  # Service for graph queries\n    prefix:str,  # Route prefix (e.g., \"/manage/documents\")\n    urls:ManagementUrls,  # URL bundle (populated after init)\n    refresh_items:Callable,  # async () -&gt; refresh items from service\n    refresh_items_oob:Callable,  # async () -&gt; refresh + targeted VC OOB tuple\n    render_list:Callable,  # () -&gt; rendered document list component\n    render_page:Callable,  # () -&gt; rendered full management page\n    get_selected_ids:Callable,  # () -&gt; List[str] of selected document IDs\n) -&gt; Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)\n    \"Initialize document list, detail, and delete routes.\"\n\n\n\nexport_ (export_.ipynb)\n\nExport routes for single document and full database JSON file downloads\n\n\nImport\nfrom cjm_transcript_workflow_management.routes.export_ import (\n    init_export_router\n)\n\n\nFunctions\ndef _sanitize_filename(\n    name:str,  # Raw filename string\n) -&gt; str:  # Filesystem-safe filename\n    \"Remove characters unsafe for filenames.\"\ndef _bundle_to_json_response(\n    bundle_dict:dict,  # Serialized ExportBundle\n    filename:str,  # Download filename (e.g., \"document.json\")\n) -&gt; Response:  # Starlette Response with JSON content and download headers\n    \"Create a file download response from an export bundle dict.\"\ndef init_export_router(\n    service:ManagementService,  # Service for graph queries\n    prefix:str,  # Route prefix (e.g., \"/manage/export\")\n) -&gt; Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)\n    \"Initialize export routes for single document and full database downloads.\"\n\n\n\nhelpers (helpers.ipynb)\n\nShared rendering helpers for the management interface\n\n\nImport\nfrom cjm_transcript_workflow_management.components.helpers import (\n    DEBUG_MANAGEMENT_RENDER,\n    render_section_header,\n    render_icon_button,\n    render_media_type_badge,\n    render_alert\n)\n\n\nFunctions\ndef render_section_header(\n    title:str,  # Section title text\n    icon_name:str,  # Lucide icon name (kebab-case)\n) -&gt; Any:  # Header element with icon and title\n    \"Render a section header with icon.\"\ndef render_icon_button(\n    icon_name:str,  # Lucide icon name (kebab-case)\n    label:str,  # Accessible label text\n    color:str=None,  # DaisyUI button color class (e.g., btn_colors.error)\n    size:str=None,  # DaisyUI button size class (e.g., btn_sizes.sm)\n    **kwargs  # Additional HTML attributes (onclick, hx_post, etc.)\n) -&gt; Any:  # Button element with icon\n    \"Render a button with an icon and accessible label.\"\ndef render_media_type_badge(\n    media_type:str,  # Media type string (e.g., \"audio\")\n) -&gt; Any:  # Badge element\n    \"Render a badge for media type display.\"\ndef render_alert(\n    message:str,  # Alert message text\n    color:str=None,  # DaisyUI alert color class (e.g., alert_colors.success)\n    alert_id:str=\"\",  # Optional HTML ID for the alert\n) -&gt; Any:  # Alert element\n    \"Render a DaisyUI alert message.\"\n\n\nVariables\nDEBUG_MANAGEMENT_RENDER = False\n\n\n\nhtml_ids (html_ids.ipynb)\n\nHTML ID constants for the graph management interface\n\n\nImport\nfrom cjm_transcript_workflow_management.html_ids import (\n    ManagementHtmlIds\n)\n\n\nClasses\nclass ManagementHtmlIds:\n    \"HTML ID constants for the graph management interface.\"\n    \n    def as_selector(\n            id_str: str  # The HTML ID to convert\n        ) -&gt; str:  # CSS selector with # prefix\n        \"Convert an ID to a CSS selector format.\"\n\n\n\nimport_ (import_.ipynb)\n\nImport route for file upload with JSON validation and merge strategy\n\n\nImport\nfrom cjm_transcript_workflow_management.routes.import_ import (\n    init_import_router\n)\n\n\nFunctions\ndef init_import_router(\n    service:ManagementService,  # Service for graph queries\n    prefix:str,  # Route prefix (e.g., \"/manage/import\")\n    urls:ManagementUrls,  # URL bundle (for list refresh)\n    refresh_items_oob:Callable,  # async () -&gt; refresh + targeted VC OOB tuple\n) -&gt; Tuple[APIRouter, Dict[str, Callable]]:  # (router, routes dict)\n    \"Initialize import route for file upload with merge strategy.\"\n\n\n\nimport_controls (import_controls.ipynb)\n\nImport UI with file input, merge strategy selector, and result display\n\n\nImport\nfrom cjm_transcript_workflow_management.components.import_controls import (\n    MERGE_STRATEGIES,\n    render_import_result,\n    render_import_controls\n)\n\n\nFunctions\ndef render_import_result(\n    result:ImportResult,  # Import operation result\n) -&gt; Any:  # Alert element showing import outcome\n    \"Render the import result as a success or error alert.\"\ndef render_import_controls(\n    urls:ManagementUrls,  # URL bundle for route endpoints\n) -&gt; Any:  # Import form with file input, strategy selector, and result area\n    \"Render the import section with file input, merge strategy, and submit button.\"\n\n\nVariables\nMERGE_STRATEGIES = [3 items]\n\n\n\ninit (init.ipynb)\n\nRouter assembly for management routes\n\n\nImport\nfrom cjm_transcript_workflow_management.routes.init import (\n    init_management_routers\n)\n\n\nFunctions\ndef init_management_routers(\n    service:ManagementService,  # Service for graph queries\n    prefix:str,  # Base prefix for management routes (e.g., \"/manage\")\n) -&gt; ManagementResult:  # Result with routers, urls, and render callables\n    \"Initialize all management routers with virtual collection integration.\"\n\n\n\nservices.management (management.ipynb)\n\nService layer wrapping graph plugin operations for document management\n\n\nImport\nfrom cjm_transcript_workflow_management.services.management import (\n    DEBUG_MANAGEMENT_SERVICE,\n    ManagementService\n)\n\n\nFunctions\n@patch\nasync def list_documents_async(self:ManagementService) -&gt; List[DocumentSummary]:  # All documents sorted newest first\n    \"\"\"List all documents with summary info.\"\"\"\n    if DEBUG_MANAGEMENT_SERVICE\n    \"List all documents with summary info.\"\n@patch\ndef list_documents(self:ManagementService) -&gt; List[DocumentSummary]:  # All documents sorted newest first\n    \"List all documents with summary info synchronously.\"\n@patch\nasync def get_document_detail_async(\n    self:ManagementService,\n    document_id: str,  # UUID of the Document node\n) -&gt; Optional[DocumentDetail]:  # Full detail or None if not found\n    \"Get full document detail with integrity checks and samples.\"\n@patch\ndef get_document_detail(\n    self:ManagementService,\n    document_id: str,  # UUID of the Document node\n) -&gt; Optional[DocumentDetail]:  # Full detail or None if not found\n    \"Get full document detail with integrity checks and samples synchronously.\"\n@patch\nasync def delete_document_async(\n    self:ManagementService,\n    document_id: str,  # UUID of the Document node to delete\n) -&gt; bool:  # True if deletion succeeded\n    \"Delete a single document and all its segments via cascade.\"\n@patch\ndef delete_document(\n    self:ManagementService,\n    document_id: str,  # UUID of the Document node to delete\n) -&gt; bool:  # True if deletion succeeded\n    \"Delete a single document and all its segments synchronously.\"\n@patch\nasync def delete_documents_async(\n    self:ManagementService,\n    document_ids: List[str],  # UUIDs of Document nodes to delete\n) -&gt; int:  # Number of documents successfully deleted\n    \"Delete multiple documents and all their segments via cascade.\"\n@patch\ndef delete_documents(\n    self:ManagementService,\n    document_ids: List[str],  # UUIDs of Document nodes to delete\n) -&gt; int:  # Number of documents successfully deleted\n    \"Delete multiple documents and all their segments synchronously.\"\n@patch\nasync def export_document_async(\n    self:ManagementService,\n    document_id: str,  # UUID of the Document node to export\n) -&gt; Optional[ExportBundle]:  # Export bundle or None if not found\n    \"Export a single document's subgraph as an ExportBundle.\"\n@patch\ndef export_document(\n    self:ManagementService,\n    document_id: str,  # UUID of the Document node to export\n) -&gt; Optional[ExportBundle]:  # Export bundle or None if not found\n    \"Export a single document's subgraph synchronously.\"\n@patch\nasync def export_all_async(self:ManagementService) -&gt; Optional[ExportBundle]:  # Export bundle or None if error\n    \"\"\"Export the entire graph database as an ExportBundle.\"\"\"\n    if DEBUG_MANAGEMENT_SERVICE\n    \"Export the entire graph database as an ExportBundle.\"\n@patch\ndef export_all(self:ManagementService) -&gt; Optional[ExportBundle]:  # Export bundle or None if error\n    \"Export the entire graph database synchronously.\"\n@patch\nasync def import_graph_async(\n    self:ManagementService,\n    bundle_data: Dict[str, Any],  # Parsed JSON from export file\n    merge_strategy: str = \"skip\",  # skip, overwrite, or merge\n) -&gt; ImportResult:  # Result with counts and any errors\n    \"Validate and import graph data from an export bundle.\"\n@patch\ndef import_graph(\n    self:ManagementService,\n    bundle_data: Dict[str, Any],  # Parsed JSON from export file\n    merge_strategy: str = \"skip\",  # skip, overwrite, or merge\n) -&gt; ImportResult:  # Result with counts and any errors\n    \"Validate and import graph data synchronously.\"\n\n\nClasses\nclass ManagementService:\n    def __init__(\n        self,\n        plugin_manager: PluginManager,  # Plugin manager for accessing graph plugin\n        plugin_name: str = \"cjm-graph-plugin-sqlite\",  # Name of the graph plugin\n    )\n    \"Service wrapping graph plugin operations for document management.\"\n    \n    def __init__(\n            self,\n            plugin_manager: PluginManager,  # Plugin manager for accessing graph plugin\n            plugin_name: str = \"cjm-graph-plugin-sqlite\",  # Name of the graph plugin\n        )\n        \"Initialize with plugin manager.\"\n    \n    def is_available(self) -&gt; bool:  # True if plugin is loaded and ready\n            \"\"\"Check if the graph plugin is available.\"\"\"\n            return self._manager.get_plugin(self._plugin_name) is not None\n        \n        # --- Plugin action wrappers ---\n        \n        async def _get_context_async(\n            self,\n            node_id: str,  # UUID of the node to query\n            depth: int = 1,  # Traversal depth\n        ) -&gt; Optional[GraphContext]:  # GraphContext or None if error\n        \"Check if the graph plugin is available.\"\n\n\nVariables\nDEBUG_MANAGEMENT_SERVICE = False  # Enable for verbose graph query logging\n\n\n\nModels (models.ipynb)\n\nData models for the graph management interface\n\n\nImport\nfrom cjm_transcript_workflow_management.models import (\n    SegmentSample,\n    DocumentSummary,\n    DocumentDetail,\n    ExportBundle,\n    ImportResult,\n    ManagementUrls,\n    ManagementResult\n)\n\n\nClasses\n@dataclass\nclass SegmentSample:\n    \"Lightweight segment snapshot for detail view display.\"\n    \n    index: int  # Segment position in the document\n    text: str  # Segment text content\n    start_time: float  # Start time in seconds\n    end_time: float  # End time in seconds\n@dataclass\nclass DocumentSummary:\n    \"Summary of a single document for list display.\"\n    \n    document_id: str  # Document node UUID\n    title: str  # Document title from properties\n    media_type: str  # e.g. \"audio\"\n    segment_count: int  # Number of Segment nodes\n    total_duration: float  # Sum of segment durations in seconds\n    created_at: float  # Unix timestamp when created\n@dataclass\nclass DocumentDetail:\n    \"Full document information for the detail dashboard.\"\n    \n    document_id: str  # Document node UUID\n    title: str  # Document title\n    media_type: str  # e.g. \"audio\"\n    created_at: float  # Unix timestamp\n    updated_at: float  # Unix timestamp\n    segment_count: int  # Total number of segments\n    total_duration: float  # Sum of segment durations in seconds\n    avg_segment_duration: float  # Average segment duration in seconds\n    has_starts_with: bool  # Document has a STARTS_WITH edge\n    next_chain_complete: bool  # All NEXT edges form a complete chain\n    next_count: int  # Number of NEXT edges found\n    part_of_complete: bool  # All segments have PART_OF edges\n    part_of_count: int  # Number of PART_OF edges found\n    all_have_timing: bool  # All segments have start_time/end_time\n    segments_missing_timing: int  # Count of segments without timing\n    all_have_sources: bool  # All segments have source references\n    segments_missing_sources: int  # Count of segments without sources\n    all_checks_passed: bool  # True if all integrity checks pass\n    source_plugins: List[str] = field(...)  # Unique plugin names from sources\n    first_segments: List[SegmentSample] = field(...)  # First N segments\n    last_segments: List[SegmentSample] = field(...)  # Last N segments\n@dataclass\nclass ExportBundle:\n    \"Metadata wrapper for exported graph data.\"\n    \n    format: str  # Always \"cjm-context-graph\"\n    version: str  # Semantic version, e.g. \"1.0.0\"\n    exported_at: str  # ISO 8601 datetime string\n    source_plugin: str  # Plugin that produced the data\n    document_count: int  # Number of Document nodes in the export\n    graph: Dict[str, Any]  # {\"nodes\": [...], \"edges\": [...]}\n@dataclass\nclass ImportResult:\n    \"Result of a graph import operation.\"\n    \n    success: bool  # Whether the import succeeded\n    nodes_created: int  # Number of nodes created\n    edges_created: int  # Number of edges created\n    nodes_skipped: int  # Number of nodes skipped (already exist)\n    edges_skipped: int  # Number of edges skipped (already exist)\n    errors: List[str] = field(...)  # Error messages if any\n@dataclass\nclass ManagementUrls:\n    \"URL bundle for management route endpoints.\"\n    \n    management_page: str  # GET: full page (header + import + list)\n    list_documents: str  # GET: document list only\n    document_detail: str  # GET: + ?doc_id=...\n    delete_document: str  # POST: + doc_id in form data\n    delete_selected: str  # POST: bulk delete\n    export_document: str  # GET: + ?doc_id=...\n    export_all: str  # GET: full database export\n    import_graph: str  # POST: file upload import\n@dataclass\nclass ManagementResult:\n    \"Result of management router initialization.\"\n    \n    routers: List[Any]  # APIRouter instances to register\n    urls: ManagementUrls  # URL bundle for route endpoints\n    routes: Dict[str, Callable]  # Route handler functions\n    render_page: Callable  # () -&gt; full management page component\n    render_list: Callable  # () -&gt; document list component\n    refresh_items: Callable  # async () -&gt; refresh items from service\n\n\n\npage_renderer (page_renderer.ipynb)\n\nMain management page renderer composing header, toolbar buttons, and document list\n\n\nImport\nfrom cjm_transcript_workflow_management.components.page_renderer import (\n    render_page_header,\n    render_management_page\n)\n\n\nFunctions\ndef render_page_header(\n    urls:ManagementUrls,  # URL bundle for route endpoints\n) -&gt; Any:  # Header element with title and action buttons\n    \"Render the management page header with title and top-level actions.\"\ndef render_management_page(\n    urls:ManagementUrls,  # URL bundle for route endpoints\n    render_list_fn:Callable,  # () -&gt; document list component\n) -&gt; Any:  # Complete management page component\n    \"Render the complete management page with header, import section, and document list.\"\n\n\n\nutils (utils.ipynb)\n\nFormatting utilities for the management interface\n\n\nImport\nfrom cjm_transcript_workflow_management.utils import (\n    format_duration,\n    format_duration_short,\n    format_date,\n    format_datetime,\n    truncate_text,\n    format_time_range\n)\n\n\nFunctions\ndef format_duration(\n    seconds: Optional[float]  # Duration in seconds\n) -&gt; str:  # Formatted string (MM:SS or H:MM:SS)\n    \"Format duration for display in document list and detail views.\"\ndef format_duration_short(\n    seconds: Optional[float]  # Duration in seconds\n) -&gt; str:  # Formatted string (e.g., \"10.3s\")\n    \"Format duration as compact seconds for average display.\"\ndef format_date(\n    timestamp: Optional[float]  # Unix timestamp\n) -&gt; str:  # Formatted date string (e.g., \"Feb 19, 2026\")\n    \"Format unix timestamp as a human-readable date.\"\ndef format_datetime(\n    timestamp: Optional[float]  # Unix timestamp\n) -&gt; str:  # Formatted datetime string (e.g., \"Feb 19, 2026 12:00\")\n    \"Format unix timestamp as a human-readable date and time.\"\ndef truncate_text(\n    text: Optional[str],  # Full text to truncate\n    max_length: int = 60  # Maximum length before truncation\n) -&gt; str:  # Truncated text with ellipsis if needed\n    \"Truncate text for table and sample display.\"\ndef format_time_range(\n    start: Optional[float],  # Start time in seconds\n    end: Optional[float]     # End time in seconds\n) -&gt; str:  # Formatted range (e.g., \"0.0s - 2.1s\")\n    \"Format a time range for sample segment display.\"",
+    "crumbs": [
+      "cjm-transcript-workflow-management"
+    ]
+  },
+  {
+    "objectID": "html_ids.html",
+    "href": "html_ids.html",
+    "title": "html_ids",
+    "section": "",
+    "text": "ManagementHtmlIds\n\ndef ManagementHtmlIds(\n    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD\n):\n\nHTML ID constants for the graph management interface.\n\nassert ManagementHtmlIds.as_selector(ManagementHtmlIds.DOCUMENT_LIST) == \"#mgmt-document-list\"\nprint(f\"List selector: {ManagementHtmlIds.as_selector(ManagementHtmlIds.DOCUMENT_LIST)}\")\n\nList selector: #mgmt-document-list",
+    "crumbs": [
+      "html_ids"
+    ]
+  },
+  {
+    "objectID": "components/document_list.html",
+    "href": "components/document_list.html",
+    "title": "document_list",
+    "section": "",
+    "text": "Define the virtual collection columns for the document list table.\n\n\n\n\ndef build_document_columns(\n    \n)-&gt;tuple:\n\nColumn definitions for the document list virtual collection.\n\ncols = build_document_columns()\nassert len(cols) == 7\nassert cols[0].key == \"select\"\nassert cols[1].sortable == True\nassert cols[2].sortable == False\nprint(f\"Columns: {[c.key for c in cols]}\")",
+    "crumbs": [
+      "components",
+      "document_list"
+    ]
+  },
+  {
+    "objectID": "components/document_list.html#column-definitions",
+    "href": "components/document_list.html#column-definitions",
+    "title": "document_list",
+    "section": "",
+    "text": "Define the virtual collection columns for the document list table.\n\n\n\n\ndef build_document_columns(\n    \n)-&gt;tuple:\n\nColumn definitions for the document list virtual collection.\n\ncols = build_document_columns()\nassert len(cols) == 7\nassert cols[0].key == \"select\"\nassert cols[1].sortable == True\nassert cols[2].sortable == False\nprint(f\"Columns: {[c.key for c in cols]}\")",
+    "crumbs": [
+      "components",
+      "document_list"
+    ]
+  },
+  {
+    "objectID": "components/document_list.html#cell-renderer",
+    "href": "components/document_list.html#cell-renderer",
+    "title": "document_list",
+    "section": "Cell Renderer",
+    "text": "Cell Renderer\nFactory that creates a cell renderer callback for the virtual collection. Each column key maps to domain-specific rendering logic.\n\n\ncreate_document_cell_renderer\n\ndef create_document_cell_renderer(\n    get_selected:Callable, # () -&gt; Set[str] of selected document IDs\n    urls:ManagementUrls, # URL bundle for action buttons\n    toggle_select_url:str='', # URL for checkbox toggle route\n)-&gt;Callable: # render_cell(item, ctx) -&gt; FT component\n\nCreate a cell renderer for the document list virtual collection.\n\nfrom fasthtml.common import to_xml\n\nurls = ManagementUrls(\n    management_page=\"/manage/documents/management_page\",\n    list_documents=\"/manage/documents/list_documents\",\n    document_detail=\"/manage/documents/document_detail\",\n    delete_document=\"/manage/documents/delete_document\",\n    delete_selected=\"/manage/documents/delete_selected\",\n    export_document=\"/manage/export/export_document\",\n    export_all=\"/manage/export/export_all\",\n    import_graph=\"/manage/import/import_graph\",\n)\n\nselected = {\"abc-123\"}\nrenderer = create_document_cell_renderer(lambda: selected, urls, \"/toggle\")\n\ndoc = DocumentSummary(\"abc-123\", \"1. Laying Plans\", \"audio\", 247, 2537.0, 1740000000.0)\nctx_title = CellRenderContext(row_index=0, column=ColumnDef(key=\"title\", header=\"Title\"), total_items=1)\ntitle_cell = renderer(doc, ctx_title)\nassert \"1. Laying Plans\" in to_xml(title_cell)\n\nctx_select = CellRenderContext(row_index=0, column=ColumnDef(key=\"select\", header=\"\"), total_items=1)\nselect_cell = renderer(doc, ctx_select)\nassert \"checked\" in to_xml(select_cell)\nprint(\"Cell renderer OK\")\n\nCell renderer OK",
+    "crumbs": [
+      "components",
+      "document_list"
+    ]
+  },
+  {
+    "objectID": "components/document_list.html#toolbar",
+    "href": "components/document_list.html#toolbar",
+    "title": "document_list",
+    "section": "Toolbar",
+    "text": "Toolbar\nSelect All checkbox (HTMX-driven) and bulk action buttons. Server-side selection state replaces client-side checkbox management.\n\n\nrender_toolbar\n\ndef render_toolbar(\n    urls:ManagementUrls, # URL bundle for route endpoints\n    selected_count:int=0, # Number of selected documents\n    total_count:int=0, # Total number of documents\n    select_all_url:str='', # URL for select-all toggle route\n)-&gt;Any: # Toolbar element\n\nRender the document list toolbar with Select All and bulk actions.\n\ntoolbar = render_toolbar(urls, selected_count=2, total_count=5, select_all_url=\"/select_all\")\nxml = to_xml(toolbar)\nassert ManagementHtmlIds.TOOLBAR in xml\nassert \"Delete Selected (2)\" in xml\nassert \"disabled\" not in xml  # Button should be enabled with 2 selected\nprint(\"Toolbar OK\")\n\ntoolbar_none = render_toolbar(urls, selected_count=0, total_count=5, select_all_url=\"/select_all\")\nxml_none = to_xml(toolbar_none)\nassert \"disabled\" in xml_none  # Button disabled with 0 selected\nprint(\"Toolbar disabled OK\")",
+    "crumbs": [
+      "components",
+      "document_list"
+    ]
+  },
+  {
+    "objectID": "components/document_list.html#client-side-javascript",
+    "href": "components/document_list.html#client-side-javascript",
+    "title": "document_list",
+    "section": "Client-Side JavaScript",
+    "text": "Client-Side JavaScript\nCheckbox selection management and delete modal preparation.\n\n\nrender_list_scripts\n\ndef render_list_scripts(\n    urls:ManagementUrls, # URL bundle for route endpoints\n)-&gt;Any: # Script element\n\nRender client-side JavaScript for delete modal management.\n\nscripts = render_list_scripts(urls)\nxml = to_xml(scripts)\nassert \"prepareDeleteModal\" in xml\nassert \"prepareBulkDeleteModal\" in xml\nassert \"toggleSelectAll\" not in xml  # Removed — now server-side\nprint(\"Scripts OK\")",
+    "crumbs": [
+      "components",
+      "document_list"
+    ]
+  },
+  {
+    "objectID": "components/document_list.html#document-list-component",
+    "href": "components/document_list.html#document-list-component",
+    "title": "document_list",
+    "section": "Document List Component",
+    "text": "Document List Component\nComplete document list with virtual collection, keyboard navigation, toolbar, modals, and scripts. Replaces the previous static HTML table.\n\n\nrender_document_list\n\ndef render_document_list(\n    items:list, # Current document list (List[DocumentSummary])\n    selected:set, # Selected document IDs (Set[str])\n    vc_config:VirtualCollectionConfig, # VC configuration\n    vc_state:VirtualCollectionState, # VC state\n    vc_ids:VirtualCollectionHtmlIds, # VC HTML IDs\n    vc_btn_ids:VirtualCollectionButtonIds, # VC button IDs\n    vc_urls:VirtualCollectionUrls, # VC route URLs\n    mgmt_urls:ManagementUrls, # Management URLs for actions\n    render_cell:Callable, # Cell renderer callback\n    select_all_url:str='', # URL for select-all toggle route\n)-&gt;Any: # Complete document list component\n\nRender the document list with virtual collection, keyboard nav, and modals.\n\n# Minimal render test — verify structure without running a server\n# Full integration tests happen via the demo app\nassert render_document_list is not None\nassert build_document_columns is not None\nassert create_document_cell_renderer is not None\nassert render_toolbar is not None\nassert render_list_scripts is not None\nprint(\"document_list exports OK\")\n\n\n# Test empty state still works with new signature\nvc_config = VirtualCollectionConfig(prefix=\"test\", columns=build_document_columns())\nvc_state = VirtualCollectionState()\nvc_ids = VirtualCollectionHtmlIds(prefix=\"test\")\nvc_btn_ids = VirtualCollectionButtonIds(prefix=\"test\")\nvc_urls = VirtualCollectionUrls()\n\nempty_list = render_document_list(\n    items=[], selected=set(),\n    vc_config=vc_config, vc_state=vc_state,\n    vc_ids=vc_ids, vc_btn_ids=vc_btn_ids,\n    vc_urls=vc_urls, mgmt_urls=urls,\n    render_cell=lambda i, c: Span(\"\"),\n    select_all_url=\"/select_all\",\n)\nxml = to_xml(empty_list)\nassert ManagementHtmlIds.DOCUMENT_LIST in xml\nassert \"No documents found.\" in xml\nprint(\"Empty state OK\")",
+    "crumbs": [
+      "components",
+      "document_list"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html",
+    "href": "components/document_detail.html",
+    "title": "document_detail",
+    "section": "",
+    "text": "from fasthtml.common import to_xml\n\nrow = _render_stat_row(\"Segments\", \"247\")\nxml = to_xml(row)\nassert \"Segments\" in xml\nassert \"247\" in xml\n\ncheck = _render_check_row(True, \"STARTS_WITH edge\", \"1\")\nxml = to_xml(check)\nassert \"circle-check\" in xml or \"svg\" in xml\nassert \"STARTS_WITH\" in xml\nprint(\"Helpers OK\")\n\nHelpers OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#shared-helpers",
+    "href": "components/document_detail.html#shared-helpers",
+    "title": "document_detail",
+    "section": "",
+    "text": "from fasthtml.common import to_xml\n\nrow = _render_stat_row(\"Segments\", \"247\")\nxml = to_xml(row)\nassert \"Segments\" in xml\nassert \"247\" in xml\n\ncheck = _render_check_row(True, \"STARTS_WITH edge\", \"1\")\nxml = to_xml(check)\nassert \"circle-check\" in xml or \"svg\" in xml\nassert \"STARTS_WITH\" in xml\nprint(\"Helpers OK\")\n\nHelpers OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#detail-header",
+    "href": "components/document_detail.html#detail-header",
+    "title": "document_detail",
+    "section": "Detail Header",
+    "text": "Detail Header\nBack to List button, title, and action buttons.\n\n\nrender_detail_header\n\ndef render_detail_header(\n    detail:DocumentDetail, # Document detail data\n    urls:ManagementUrls, # URL bundle for route endpoints\n)-&gt;Any: # Header element with navigation and actions\n\nRender the detail view header with Back, Export, and Delete buttons.\n\nfrom fasthtml.common import to_xml\nfrom cjm_transcript_workflow_management.models import DocumentDetail, ManagementUrls\n\nurls = ManagementUrls(\n    management_page=\"/manage/documents/management_page\",\n    list_documents=\"/manage/documents/list_documents\",\n    document_detail=\"/manage/documents/document_detail\",\n    delete_document=\"/manage/documents/delete_document\",\n    delete_selected=\"/manage/documents/delete_selected\",\n    export_document=\"/manage/export/export_document\",\n    export_all=\"/manage/export/export_all\",\n    import_graph=\"/manage/import/import_graph\",\n)\n\ndetail = DocumentDetail(\n    document_id=\"abc-123-def-456\", title=\"1. Laying Plans\",\n    media_type=\"audio\", created_at=1740000000.0, updated_at=1740000000.0,\n    segment_count=247, total_duration=2537.0, avg_segment_duration=10.3,\n    has_starts_with=True, next_chain_complete=True, next_count=246,\n    part_of_complete=True, part_of_count=247,\n    all_have_timing=True, segments_missing_timing=0,\n    all_have_sources=True, segments_missing_sources=0,\n    all_checks_passed=True,\n    source_plugins=[\"cjm-transcription-plugin-whisper\"],\n    first_segments=[SegmentSample(0, \"Sun Tzu said,\", 0.0, 2.1)],\n    last_segments=[SegmentSample(246, \"Hence under these five...\", 2528.0, 2537.0)],\n)\n\nhdr = render_detail_header(detail, urls)\nxml = to_xml(hdr)\nassert \"Back to List\" in xml\nassert \"Export\" in xml\nassert \"Delete\" in xml\nassert urls.management_page in xml\nassert 'hx-swap=\"outerHTML\"' in xml\nassert f'href=\"{urls.export_document}?doc_id={detail.document_id}\"' in xml\nassert \"download\" in xml\nprint(\"Detail header OK\")\n\nDetail header OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#document-info-section",
+    "href": "components/document_detail.html#document-info-section",
+    "title": "document_detail",
+    "section": "Document Info Section",
+    "text": "Document Info Section\n\n\nrender_document_info\n\ndef render_document_info(\n    detail:DocumentDetail, # Document detail data\n)-&gt;Any: # Card element with document info\n\nRender the document info card.\n\ninfo = render_document_info(detail)\nxml = to_xml(info)\nassert \"1. Laying Plans\" in xml\nassert \"abc-123-def-\" in xml\nassert \"audio\" in xml\nprint(\"Document info OK\")\n\nDocument info OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#segment-stats-section",
+    "href": "components/document_detail.html#segment-stats-section",
+    "title": "document_detail",
+    "section": "Segment Stats Section",
+    "text": "Segment Stats Section\n\n\nrender_segment_stats\n\ndef render_segment_stats(\n    detail:DocumentDetail, # Document detail data\n)-&gt;Any: # Card element with segment stats\n\nRender the segment statistics card.\n\nstats = render_segment_stats(detail)\nxml = to_xml(stats)\nassert \"247\" in xml\nassert \"42:17\" in xml\nassert \"10.3s\" in xml\nprint(\"Segment stats OK\")\n\nSegment stats OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#source-traceability-section",
+    "href": "components/document_detail.html#source-traceability-section",
+    "title": "document_detail",
+    "section": "Source Traceability Section",
+    "text": "Source Traceability Section\n\n\nrender_sources_info\n\ndef render_sources_info(\n    detail:DocumentDetail, # Document detail data\n)-&gt;Any: # Card element with source plugin info\n\nRender the source traceability card.\n\nsrc = render_sources_info(detail)\nxml = to_xml(src)\nassert \"cjm-transcription-plugin-whisper\" in xml\nprint(\"Sources info OK\")\n\nSources info OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#integrity-checks-section",
+    "href": "components/document_detail.html#integrity-checks-section",
+    "title": "document_detail",
+    "section": "Integrity Checks Section",
+    "text": "Integrity Checks Section\n\n\nrender_integrity_checks\n\ndef render_integrity_checks(\n    detail:DocumentDetail, # Document detail data\n)-&gt;Any: # Card element with integrity check rows\n\nRender the integrity checks card with pass/fail indicators.\n\nchecks = render_integrity_checks(detail)\nxml = to_xml(checks)\nassert \"STARTS_WITH\" in xml\nassert \"NEXT chain\" in xml\nassert \"PART_OF\" in xml\nassert \"246/246\" in xml\nassert \"247/247\" in xml\nprint(\"Integrity checks OK\")\n\nIntegrity checks OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#sample-segments-section",
+    "href": "components/document_detail.html#sample-segments-section",
+    "title": "document_detail",
+    "section": "Sample Segments Section",
+    "text": "Sample Segments Section\n\n\nrender_sample_segments\n\ndef render_sample_segments(\n    detail:DocumentDetail, # Document detail data\n)-&gt;Any: # Card element with sample segment lists\n\nRender the sample segments card with first and last segments.\n\nsamples = render_sample_segments(detail)\nxml = to_xml(samples)\nassert \"[0]\" in xml\nassert \"Sun Tzu said,\" in xml\nassert \"[246]\" in xml\nassert \"First:\" in xml\nassert \"Last:\" in xml\nprint(\"Sample segments OK\")\n\nSample segments OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#detail-scripts",
+    "href": "components/document_detail.html#detail-scripts",
+    "title": "document_detail",
+    "section": "Detail Scripts",
+    "text": "Detail Scripts\nJavaScript for delete from detail view.\n\n\nrender_detail_scripts\n\ndef render_detail_scripts(\n    urls:ManagementUrls, # URL bundle for route endpoints\n)-&gt;Any: # Script element\n\nRender client-side JavaScript for delete from detail view.\n\nscripts = render_detail_scripts(urls)\nxml = to_xml(scripts)\nassert \"prepareDetailDeleteModal\" in xml\nprint(\"Detail scripts OK\")\n\nDetail scripts OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#full-detail-view",
+    "href": "components/document_detail.html#full-detail-view",
+    "title": "document_detail",
+    "section": "Full Detail View",
+    "text": "Full Detail View\nComplete detail dashboard composing all sections.\n\n\nrender_document_detail\n\ndef render_document_detail(\n    detail:DocumentDetail, # Document detail data\n    urls:ManagementUrls, # URL bundle for route endpoints\n)-&gt;Any: # Complete detail dashboard\n\nRender the complete document detail dashboard.\n\nfull_detail = render_document_detail(detail, urls)\nxml = to_xml(full_detail)\nassert ManagementHtmlIds.DOCUMENT_DETAIL in xml\nassert \"1. Laying Plans\" in xml\nassert \"Back to List\" in xml\nassert \"STARTS_WITH\" in xml\nassert \"[0]\" in xml\nassert \"Sun Tzu said,\" in xml\nprint(f\"Full detail OK ({len(xml)} chars)\")\n\nFull detail OK (10863 chars)",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "components/document_detail.html#error-state",
+    "href": "components/document_detail.html#error-state",
+    "title": "document_detail",
+    "section": "Error State",
+    "text": "Error State\n\n\nrender_detail_error\n\ndef render_detail_error(\n    message:str='Document not found.', # Error message\n    urls:ManagementUrls=None, # URL bundle for Back to List\n)-&gt;Any: # Error state element\n\nRender an error state for the detail view.\n\nerr = render_detail_error(\"Document not found.\", urls)\nxml = to_xml(err)\nassert \"Document not found.\" in xml\nassert \"Back to List\" in xml\nprint(\"Error state OK\")\n\nError state OK",
+    "crumbs": [
+      "components",
+      "document_detail"
+    ]
+  },
+  {
+    "objectID": "utils.html",
+    "href": "utils.html",
+    "title": "utils",
+    "section": "",
+    "text": "def format_duration(\n    seconds:Optional, # Duration in seconds\n)-&gt;str: # Formatted string (MM:SS or H:MM:SS)\n\nFormat duration for display in document list and detail views.\n\nassert format_duration(2537.0) == \"42:17\"\nassert format_duration(3661.0) == \"1:01:01\"\nassert format_duration(65.0) == \"1:05\"\nassert format_duration(0.0) == \"0:00\"\nassert format_duration(None) == \"--:--\"\nassert format_duration(-1.0) == \"--:--\"\nprint(f\"2537s -&gt; {format_duration(2537.0)}\")\nprint(f\"3661s -&gt; {format_duration(3661.0)}\")\n\n2537s -&gt; 42:17\n3661s -&gt; 1:01:01\n\n\n\n\n\n\n\ndef format_duration_short(\n    seconds:Optional, # Duration in seconds\n)-&gt;str: # Formatted string (e.g., \"10.3s\")\n\nFormat duration as compact seconds for average display.\n\nassert format_duration_short(10.27) == \"10.3s\"\nassert format_duration_short(None) == \"-.-s\"\nprint(f\"10.27s -&gt; {format_duration_short(10.27)}\")\n\n10.27s -&gt; 10.3s",
+    "crumbs": [
+      "utils"
+    ]
+  },
+  {
+    "objectID": "utils.html#duration-formatting",
+    "href": "utils.html#duration-formatting",
+    "title": "utils",
+    "section": "",
+    "text": "def format_duration(\n    seconds:Optional, # Duration in seconds\n)-&gt;str: # Formatted string (MM:SS or H:MM:SS)\n\nFormat duration for display in document list and detail views.\n\nassert format_duration(2537.0) == \"42:17\"\nassert format_duration(3661.0) == \"1:01:01\"\nassert format_duration(65.0) == \"1:05\"\nassert format_duration(0.0) == \"0:00\"\nassert format_duration(None) == \"--:--\"\nassert format_duration(-1.0) == \"--:--\"\nprint(f\"2537s -&gt; {format_duration(2537.0)}\")\nprint(f\"3661s -&gt; {format_duration(3661.0)}\")\n\n2537s -&gt; 42:17\n3661s -&gt; 1:01:01\n\n\n\n\n\n\n\ndef format_duration_short(\n    seconds:Optional, # Duration in seconds\n)-&gt;str: # Formatted string (e.g., \"10.3s\")\n\nFormat duration as compact seconds for average display.\n\nassert format_duration_short(10.27) == \"10.3s\"\nassert format_duration_short(None) == \"-.-s\"\nprint(f\"10.27s -&gt; {format_duration_short(10.27)}\")\n\n10.27s -&gt; 10.3s",
+    "crumbs": [
+      "utils"
+    ]
+  },
+  {
+    "objectID": "utils.html#date-formatting",
+    "href": "utils.html#date-formatting",
+    "title": "utils",
+    "section": "Date Formatting",
+    "text": "Date Formatting\n\n\nformat_date\n\ndef format_date(\n    timestamp:Optional, # Unix timestamp\n)-&gt;str: # Formatted date string (e.g., \"Feb 19, 2026\")\n\nFormat unix timestamp as a human-readable date.\n\nassert format_date(1740000000.0) == \"Feb 19, 2025\"\nassert format_date(None) == \"—\"\nprint(f\"1740000000 -&gt; {format_date(1740000000.0)}\")\n\n1740000000 -&gt; Feb 19, 2025\n\n\n\n\n\nformat_datetime\n\ndef format_datetime(\n    timestamp:Optional, # Unix timestamp\n)-&gt;str: # Formatted datetime string (e.g., \"Feb 19, 2026 12:00\")\n\nFormat unix timestamp as a human-readable date and time.\n\nassert \"2025\" in format_datetime(1740000000.0)\nassert format_datetime(None) == \"—\"\nprint(f\"1740000000 -&gt; {format_datetime(1740000000.0)}\")\n\n1740000000 -&gt; Feb 19, 2025 21:20",
+    "crumbs": [
+      "utils"
+    ]
+  },
+  {
+    "objectID": "utils.html#text-formatting",
+    "href": "utils.html#text-formatting",
+    "title": "utils",
+    "section": "Text Formatting",
+    "text": "Text Formatting\n\n\ntruncate_text\n\ndef truncate_text(\n    text:Optional, # Full text to truncate\n    max_length:int=60, # Maximum length before truncation\n)-&gt;str: # Truncated text with ellipsis if needed\n\nTruncate text for table and sample display.\n\nassert truncate_text(\"short\") == \"short\"\nassert truncate_text(\"a\" * 100, 20) == \"a\" * 17 + \"...\"\nassert len(truncate_text(\"a\" * 100, 20)) == 20\nassert truncate_text(None) == \"\"\nprint(f\"Truncated: {truncate_text('The art of war is of vital importance to the state. It is a matter of life and death.', 40)}\")\n\nTruncated: The art of war is of vital importance...\n\n\n\n\n\nformat_time_range\n\ndef format_time_range(\n    start:Optional, # Start time in seconds\n    end:Optional, # End time in seconds\n)-&gt;str: # Formatted range (e.g., \"0.0s - 2.1s\")\n\nFormat a time range for sample segment display.\n\nassert format_time_range(0.0, 2.1) == \"0.0s - 2.1s\"\nassert format_time_range(None, 2.1) == \"-.-s - -.-s\"\nprint(f\"Range: {format_time_range(0.0, 2.1)}\")\n\nRange: 0.0s - 2.1s",
+    "crumbs": [
+      "utils"
+    ]
+  },
+  {
+    "objectID": "components/page_renderer.html",
+    "href": "components/page_renderer.html",
+    "title": "page_renderer",
+    "section": "",
+    "text": "Title and top-level action buttons (Import, Export All).\n\n\n\n\ndef render_page_header(\n    urls:ManagementUrls, # URL bundle for route endpoints\n)-&gt;Any: # Header element with title and action buttons\n\nRender the management page header with title and top-level actions.\n\nfrom fasthtml.common import to_xml, Div\nfrom cjm_transcript_workflow_management.models import ManagementUrls\n\nurls = ManagementUrls(\n    management_page=\"/manage/documents/management_page\",\n    list_documents=\"/manage/documents/list_documents\",\n    document_detail=\"/manage/documents/document_detail\",\n    delete_document=\"/manage/documents/delete_document\",\n    delete_selected=\"/manage/documents/delete_selected\",\n    export_document=\"/manage/export/export_document\",\n    export_all=\"/manage/export/export_all\",\n    import_graph=\"/manage/import/import_graph\",\n)\n\nhdr = render_page_header(urls)\nxml = to_xml(hdr)\nassert \"Graph Management\" in xml\nassert \"Import\" in xml\nassert \"Export All\" in xml\nassert f'href=\"{urls.export_all}\"' in xml\nassert 'download' in xml\nassert ManagementHtmlIds.IMPORT_SECTION in xml\nprint(\"Header OK\")\n\nHeader OK",
+    "crumbs": [
+      "components",
+      "page_renderer"
+    ]
+  },
+  {
+    "objectID": "components/page_renderer.html#page-header",
+    "href": "components/page_renderer.html#page-header",
+    "title": "page_renderer",
+    "section": "",
+    "text": "Title and top-level action buttons (Import, Export All).\n\n\n\n\ndef render_page_header(\n    urls:ManagementUrls, # URL bundle for route endpoints\n)-&gt;Any: # Header element with title and action buttons\n\nRender the management page header with title and top-level actions.\n\nfrom fasthtml.common import to_xml, Div\nfrom cjm_transcript_workflow_management.models import ManagementUrls\n\nurls = ManagementUrls(\n    management_page=\"/manage/documents/management_page\",\n    list_documents=\"/manage/documents/list_documents\",\n    document_detail=\"/manage/documents/document_detail\",\n    delete_document=\"/manage/documents/delete_document\",\n    delete_selected=\"/manage/documents/delete_selected\",\n    export_document=\"/manage/export/export_document\",\n    export_all=\"/manage/export/export_all\",\n    import_graph=\"/manage/import/import_graph\",\n)\n\nhdr = render_page_header(urls)\nxml = to_xml(hdr)\nassert \"Graph Management\" in xml\nassert \"Import\" in xml\nassert \"Export All\" in xml\nassert f'href=\"{urls.export_all}\"' in xml\nassert 'download' in xml\nassert ManagementHtmlIds.IMPORT_SECTION in xml\nprint(\"Header OK\")\n\nHeader OK",
+    "crumbs": [
+      "components",
+      "page_renderer"
+    ]
+  },
+  {
+    "objectID": "components/page_renderer.html#management-page",
+    "href": "components/page_renderer.html#management-page",
+    "title": "page_renderer",
+    "section": "Management Page",
+    "text": "Management Page\nComplete management page composing header and document list.\n\n\nrender_management_page\n\ndef render_management_page(\n    urls:ManagementUrls, # URL bundle for route endpoints\n    render_list_fn:Callable, # () -&gt; document list component\n)-&gt;Any: # Complete management page component\n\nRender the complete management page with header, import section, and document list.\n\npage = render_management_page(urls, lambda: Div(\"mock-list\", id=ManagementHtmlIds.DOCUMENT_LIST))\nxml = to_xml(page)\nassert ManagementHtmlIds.PAGE_CONTENT in xml\nassert ManagementHtmlIds.DOCUMENT_LIST in xml\nassert ManagementHtmlIds.IMPORT_SECTION in xml\nassert \"hidden\" in xml\nassert \"Graph Management\" in xml\nassert \"mock-list\" in xml\nprint(\"Management page OK\")\n\n\n# Test with empty render function\nempty_page = render_management_page(urls, lambda: Div(\"No documents found.\", id=ManagementHtmlIds.DOCUMENT_LIST))\nxml = to_xml(empty_page)\nassert \"No documents found.\" in xml\nprint(\"Empty page OK\")",
+    "crumbs": [
+      "components",
+      "page_renderer"
+    ]
+  },
+  {
+    "objectID": "components/import_controls.html#import-result-display",
+    "href": "components/import_controls.html#import-result-display",
+    "title": "import_controls",
+    "section": "Import Result Display",
+    "text": "Import Result Display\n\n\nrender_import_result\n\ndef render_import_result(\n    result:ImportResult, # Import operation result\n)-&gt;Any: # Alert element showing import outcome\n\nRender the import result as a success or error alert.\n\nfrom fasthtml.common import to_xml\nfrom cjm_transcript_workflow_management.models import ImportResult\n\n# Success case\nok = render_import_result(ImportResult(\n    success=True, nodes_created=248, edges_created=494,\n    nodes_skipped=0, edges_skipped=0,\n))\nxml = to_xml(ok)\nassert \"248 nodes\" in xml\nassert \"494 edges\" in xml\nassert \"alert-success\" in xml\nprint(\"Success result OK\")\n\nSuccess result OK\n\n\n\n# Error case\nerr = render_import_result(ImportResult(\n    success=False, nodes_created=0, edges_created=0,\n    nodes_skipped=0, edges_skipped=0,\n    errors=[\"Invalid format: expected 'cjm-context-graph'\"],\n))\nxml = to_xml(err)\nassert \"Invalid format\" in xml\nassert \"alert-error\" in xml\nprint(\"Error result OK\")\n\nError result OK\n\n\n\n# Skip case\nskip = render_import_result(ImportResult(\n    success=True, nodes_created=0, edges_created=0,\n    nodes_skipped=248, edges_skipped=494,\n))\nxml = to_xml(skip)\nassert \"Skipped: 248 nodes\" in xml\nassert \"alert-success\" in xml\nprint(\"Skip result OK\")\n\nSkip result OK",
+    "crumbs": [
+      "components",
+      "import_controls"
+    ]
+  },
+  {
+    "objectID": "components/import_controls.html#import-controls",
+    "href": "components/import_controls.html#import-controls",
+    "title": "import_controls",
+    "section": "Import Controls",
+    "text": "Import Controls\n\n\nrender_import_controls\n\ndef render_import_controls(\n    urls:ManagementUrls, # URL bundle for route endpoints\n)-&gt;Any: # Import form with file input, strategy selector, and result area\n\nRender the import section with file input, merge strategy, and submit button.\n\nfrom cjm_transcript_workflow_management.models import ManagementUrls\n\nurls = ManagementUrls(\n    management_page=\"/manage/documents/management_page\",\n    list_documents=\"/manage/documents/list_documents\",\n    document_detail=\"/manage/documents/document_detail\",\n    delete_document=\"/manage/documents/delete_document\",\n    delete_selected=\"/manage/documents/delete_selected\",\n    export_document=\"/manage/export/export_document\",\n    export_all=\"/manage/export/export_all\",\n    import_graph=\"/manage/import/import_graph\",\n)\n\ncontrols = render_import_controls(urls)\nxml = to_xml(controls)\nassert ManagementHtmlIds.IMPORT_SECTION in xml\nassert ManagementHtmlIds.IMPORT_RESULT in xml\nassert 'type=\"file\"' in xml\nassert 'accept=\".json\"' in xml\nassert 'name=\"merge_strategy\"' in xml\nassert 'value=\"skip\"' in xml\nassert 'value=\"overwrite\"' in xml\nassert 'value=\"merge\"' in xml\nassert 'checked' in xml\nassert 'Import Graph' in xml\nassert urls.import_graph in xml\nassert 'multipart/form-data' in xml\nprint(\"Import controls OK\")\n\nImport controls OK",
+    "crumbs": [
+      "components",
+      "import_controls"
+    ]
+  },
+  {
+    "objectID": "components/helpers.html",
+    "href": "components/helpers.html",
+    "title": "helpers",
+    "section": "",
+    "text": "def render_section_header(\n    title:str, # Section title text\n    icon_name:str, # Lucide icon name (kebab-case)\n)-&gt;Any: # Header element with icon and title\n\nRender a section header with icon.\n\nfrom fasthtml.common import to_xml\n\nhdr = render_section_header(\"Documents\", \"file-text\")\nxml = to_xml(hdr)\nassert \"file-text\" in xml or \"svg\" in xml\nassert \"Documents\" in xml\nprint(xml[:200])\n\n&lt;h3 class=\"text-lg font-semibold flex items-center gap-2\"&gt;\n&lt;svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-",
+    "crumbs": [
+      "components",
+      "helpers"
+    ]
+  },
+  {
+    "objectID": "components/helpers.html#section-header",
+    "href": "components/helpers.html#section-header",
+    "title": "helpers",
+    "section": "",
+    "text": "def render_section_header(\n    title:str, # Section title text\n    icon_name:str, # Lucide icon name (kebab-case)\n)-&gt;Any: # Header element with icon and title\n\nRender a section header with icon.\n\nfrom fasthtml.common import to_xml\n\nhdr = render_section_header(\"Documents\", \"file-text\")\nxml = to_xml(hdr)\nassert \"file-text\" in xml or \"svg\" in xml\nassert \"Documents\" in xml\nprint(xml[:200])\n\n&lt;h3 class=\"text-lg font-semibold flex items-center gap-2\"&gt;\n&lt;svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-",
+    "crumbs": [
+      "components",
+      "helpers"
+    ]
+  },
+  {
+    "objectID": "components/helpers.html#action-buttons",
+    "href": "components/helpers.html#action-buttons",
+    "title": "helpers",
+    "section": "Action Buttons",
+    "text": "Action Buttons\n\n\nrender_icon_button\n\ndef render_icon_button(\n    icon_name:str, # Lucide icon name (kebab-case)\n    label:str, # Accessible label text\n    color:str=None, # DaisyUI button color class (e.g., btn_colors.error)\n    size:str=None, # DaisyUI button size class (e.g., btn_sizes.sm)\n    kwargs:VAR_KEYWORD\n)-&gt;Any: # Button element with icon\n\nRender a button with an icon and accessible label.\n\nb = render_icon_button(\"trash-2\", \"Delete\", color=str(btn_colors.error), size=str(btn_sizes.sm))\nxml = to_xml(b)\nassert 'title=\"Delete\"' in xml\nassert \"btn\" in xml\nprint(xml)\n\n&lt;button class=\"btn btn-ghost btn-error btn-sm\" title=\"Delete\"&gt;&lt;svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"w-4 h-4\"&gt;&lt;path d=\"M10 11v6\"&gt;&lt;/path&gt;&lt;path d=\"M14 11v6\"&gt;&lt;/path&gt;&lt;path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\"&gt;&lt;/path&gt;&lt;path d=\"M3 6h18\"&gt;&lt;/path&gt;&lt;path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/button&gt;",
+    "crumbs": [
+      "components",
+      "helpers"
+    ]
+  },
+  {
+    "objectID": "components/helpers.html#status-badges",
+    "href": "components/helpers.html#status-badges",
+    "title": "helpers",
+    "section": "Status Badges",
+    "text": "Status Badges\n\n\nrender_media_type_badge\n\ndef render_media_type_badge(\n    media_type:str, # Media type string (e.g., \"audio\")\n)-&gt;Any: # Badge element\n\nRender a badge for media type display.\n\nb = render_media_type_badge(\"audio\")\nxml = to_xml(b)\nassert \"audio\" in xml\nassert \"badge\" in xml\nprint(xml[:200])\n\n&lt;span class=\"badge badge-outline badge-sm\"&gt;audio&lt;/span&gt;",
+    "crumbs": [
+      "components",
+      "helpers"
+    ]
+  },
+  {
+    "objectID": "components/helpers.html#alert-messages",
+    "href": "components/helpers.html#alert-messages",
+    "title": "helpers",
+    "section": "Alert Messages",
+    "text": "Alert Messages\n\n\nrender_alert\n\ndef render_alert(\n    message:str, # Alert message text\n    color:str=None, # DaisyUI alert color class (e.g., alert_colors.success)\n    alert_id:str='', # Optional HTML ID for the alert\n)-&gt;Any: # Alert element\n\nRender a DaisyUI alert message.\n\na = render_alert(\"Document deleted.\", color=str(alert_colors.success), alert_id=\"my-alert\")\nxml = to_xml(a)\nassert \"Document deleted.\" in xml\nassert 'id=\"my-alert\"' in xml\nassert 'role=\"alert\"' in xml\nprint(xml[:200])\n\n&lt;div role=\"alert\" id=\"my-alert\" class=\"alert alert-success\"&gt;\n&lt;span&gt;Document deleted.&lt;/span&gt;&lt;/div&gt;\n\n\n\n\n# render_empty_state moved to cjm-fasthtml-app-core (V8 anatomy helper)",
+    "crumbs": [
+      "components",
+      "helpers"
+    ]
+  },
+  {
+    "objectID": "services/management.html#managementservice",
+    "href": "services/management.html#managementservice",
+    "title": "services.management",
+    "section": "ManagementService",
+    "text": "ManagementService\nCore class with constructor, availability check, and all private helpers. Public methods are added via @patch in subsequent cells.\n\n\nManagementService\n\ndef ManagementService(\n    plugin_manager:PluginManager, # Plugin manager for accessing graph plugin\n    plugin_name:str='cjm-graph-plugin-sqlite', # Name of the graph plugin\n):\n\nService wrapping graph plugin operations for document management.\n\n\nList Documents\n\n\n\nManagementService.list_documents\n\ndef list_documents(\n    \n)-&gt;List: # All documents sorted newest first\n\nList all documents with summary info synchronously.\n\n\n\nManagementService.list_documents_async\n\nasync def list_documents_async(\n    \n)-&gt;List: # All documents sorted newest first\n\nList all documents with summary info.\n\n\nGet Document Detail\n\n\n\nManagementService.get_document_detail\n\ndef get_document_detail(\n    document_id:str, # UUID of the Document node\n)-&gt;Optional: # Full detail or None if not found\n\nGet full document detail with integrity checks and samples synchronously.\n\n\n\nManagementService.get_document_detail_async\n\nasync def get_document_detail_async(\n    document_id:str, # UUID of the Document node\n)-&gt;Optional: # Full detail or None if not found\n\nGet full document detail with integrity checks and samples.\n\n\nDelete Documents\n\n\n\nManagementService.delete_documents\n\ndef delete_documents(\n    document_ids:List, # UUIDs of Document nodes to delete\n)-&gt;int: # Number of documents successfully deleted\n\nDelete multiple documents and all their segments synchronously.\n\n\n\nManagementService.delete_documents_async\n\nasync def delete_documents_async(\n    document_ids:List, # UUIDs of Document nodes to delete\n)-&gt;int: # Number of documents successfully deleted\n\nDelete multiple documents and all their segments via cascade.\n\n\n\nManagementService.delete_document\n\ndef delete_document(\n    document_id:str, # UUID of the Document node to delete\n)-&gt;bool: # True if deletion succeeded\n\nDelete a single document and all its segments synchronously.\n\n\n\nManagementService.delete_document_async\n\nasync def delete_document_async(\n    document_id:str, # UUID of the Document node to delete\n)-&gt;bool: # True if deletion succeeded\n\nDelete a single document and all its segments via cascade.\n\n\nExport\n\n\n\nManagementService.export_all\n\ndef export_all(\n    \n)-&gt;Optional: # Export bundle or None if error\n\nExport the entire graph database synchronously.\n\n\n\nManagementService.export_all_async\n\nasync def export_all_async(\n    \n)-&gt;Optional: # Export bundle or None if error\n\nExport the entire graph database as an ExportBundle.\n\n\n\nManagementService.export_document\n\ndef export_document(\n    document_id:str, # UUID of the Document node to export\n)-&gt;Optional: # Export bundle or None if not found\n\nExport a single document’s subgraph synchronously.\n\n\n\nManagementService.export_document_async\n\nasync def export_document_async(\n    document_id:str, # UUID of the Document node to export\n)-&gt;Optional: # Export bundle or None if not found\n\nExport a single document’s subgraph as an ExportBundle.\n\n\nImport\n\n\n\nManagementService.import_graph\n\ndef import_graph(\n    bundle_data:Dict, # Parsed JSON from export file\n    merge_strategy:str='skip', # skip, overwrite, or merge\n)-&gt;ImportResult: # Result with counts and any errors\n\nValidate and import graph data synchronously.\n\n\n\nManagementService.import_graph_async\n\nasync def import_graph_async(\n    bundle_data:Dict, # Parsed JSON from export file\n    merge_strategy:str='skip', # skip, overwrite, or merge\n)-&gt;ImportResult: # Result with counts and any errors\n\nValidate and import graph data from an export bundle.",
+    "crumbs": [
+      "services",
+      "services.management"
+    ]
+  },
+  {
+    "objectID": "routes/import_.html",
+    "href": "routes/import_.html",
+    "title": "import_",
+    "section": "",
+    "text": "def init_import_router(\n    service:ManagementService, # Service for graph queries\n    prefix:str, # Route prefix (e.g., \"/manage/import\")\n    urls:ManagementUrls, # URL bundle (for list refresh)\n    refresh_items_oob:Callable, # async () -&gt; refresh + targeted VC OOB tuple\n)-&gt;Tuple: # (router, routes dict)\n\nInitialize import route for file upload with merge strategy.\n\nassert init_import_router is not None\nprint(\"routes.import_ imports OK\")\n\nroutes.import_ imports OK",
+    "crumbs": [
+      "routes",
+      "import_"
+    ]
+  },
+  {
+    "objectID": "routes/import_.html#router-initialization",
+    "href": "routes/import_.html#router-initialization",
+    "title": "import_",
+    "section": "",
+    "text": "def init_import_router(\n    service:ManagementService, # Service for graph queries\n    prefix:str, # Route prefix (e.g., \"/manage/import\")\n    urls:ManagementUrls, # URL bundle (for list refresh)\n    refresh_items_oob:Callable, # async () -&gt; refresh + targeted VC OOB tuple\n)-&gt;Tuple: # (router, routes dict)\n\nInitialize import route for file upload with merge strategy.\n\nassert init_import_router is not None\nprint(\"routes.import_ imports OK\")\n\nroutes.import_ imports OK",
+    "crumbs": [
+      "routes",
+      "import_"
+    ]
+  },
+  {
+    "objectID": "routes/core.html",
+    "href": "routes/core.html",
+    "title": "core",
+    "section": "",
+    "text": "Unlike the workflow page-centric libraries that use StateStore + InteractionContext + session IDs, the management library is stateless. Routes receive ManagementService directly via closure — no context loader needed.\n\n# Verify import\nassert ManagementService is not None\nprint(\"routes.core imports OK\")\n\nroutes.core imports OK",
+    "crumbs": [
+      "routes",
+      "core"
+    ]
+  },
+  {
+    "objectID": "routes/core.html#service-access",
+    "href": "routes/core.html#service-access",
+    "title": "core",
+    "section": "",
+    "text": "Unlike the workflow page-centric libraries that use StateStore + InteractionContext + session IDs, the management library is stateless. Routes receive ManagementService directly via closure — no context loader needed.\n\n# Verify import\nassert ManagementService is not None\nprint(\"routes.core imports OK\")\n\nroutes.core imports OK",
+    "crumbs": [
+      "routes",
+      "core"
+    ]
+  },
+  {
+    "objectID": "routes/documents.html",
+    "href": "routes/documents.html",
+    "title": "documents",
+    "section": "",
+    "text": "def init_document_router(\n    service:ManagementService, # Service for graph queries\n    prefix:str, # Route prefix (e.g., \"/manage/documents\")\n    urls:ManagementUrls, # URL bundle (populated after init)\n    refresh_items:Callable, # async () -&gt; refresh items from service\n    refresh_items_oob:Callable, # async () -&gt; refresh + targeted VC OOB tuple\n    render_list:Callable, # () -&gt; rendered document list component\n    render_page:Callable, # () -&gt; rendered full management page\n    get_selected_ids:Callable, # () -&gt; List[str] of selected document IDs\n)-&gt;Tuple: # (router, routes dict)\n\nInitialize document list, detail, and delete routes.\n\nassert init_document_router is not None\nprint(\"routes.documents imports OK\")\n\nroutes.documents imports OK",
+    "crumbs": [
+      "routes",
+      "documents"
+    ]
+  },
+  {
+    "objectID": "routes/documents.html#router-initialization",
+    "href": "routes/documents.html#router-initialization",
+    "title": "documents",
+    "section": "",
+    "text": "def init_document_router(\n    service:ManagementService, # Service for graph queries\n    prefix:str, # Route prefix (e.g., \"/manage/documents\")\n    urls:ManagementUrls, # URL bundle (populated after init)\n    refresh_items:Callable, # async () -&gt; refresh items from service\n    refresh_items_oob:Callable, # async () -&gt; refresh + targeted VC OOB tuple\n    render_list:Callable, # () -&gt; rendered document list component\n    render_page:Callable, # () -&gt; rendered full management page\n    get_selected_ids:Callable, # () -&gt; List[str] of selected document IDs\n)-&gt;Tuple: # (router, routes dict)\n\nInitialize document list, detail, and delete routes.\n\nassert init_document_router is not None\nprint(\"routes.documents imports OK\")\n\nroutes.documents imports OK",
+    "crumbs": [
+      "routes",
+      "documents"
+    ]
+  }
+]
